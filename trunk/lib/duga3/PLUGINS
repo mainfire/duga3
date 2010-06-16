@@ -1,0 +1,41 @@
+i've continued to keep this as basic as possible, just like before, to minimize the complexity required to do this properly.
+first off, your atom based plugin needs 5 things to start:
+
+  'test' => array                                  # the actual array itself, the name we use here MUST be exact same as the value in PLUGINNAME within this array
+  (                                                # open the 'test' array
+     'PLUGINNAME' => 'test',                       # the plugin name, needs to be the same as the array name above
+     'PLUGINXML' => 'Atom',                        # the plugin xml chooser, it decides how to parse the xml file to at least return the url
+     'PLUGINURL' => 'http://example.com/atom.xml', # the url location of the xml feed we are going to parse through
+     'PLUGINNODETAG' => 'enclosure',               # the <markup> that contains the feeds url, a standard compliant atom based feed _always_ has an enclosure markup for files
+     'PLUGINNODEATTRIBUTE' => 'url',               # the attribute where the torrents url is contained, this <markup attribute=""> is _always_ url for standard compliance
+     'PLUGINHACKS' => '0',                         # specify whether we want to write in a string (exec'd via eval) that changes around the url to point to the right location
+     'PLUGINPROXY' => '0',                         # requests the page via a web proxy (specified in a define below these plugins)
+     'PLUGINPROXYSCRAPE' => '0',                   # requests the scrape via a web proxy
+  )                                                # close the 'test' array
+
+ if the feed is regular rss:
+
+  'test' => array                                  # the actual array itself, the name we use here MUST be exact same as the value in PLUGINNAME within this array
+  (                                                # open the 'test' array
+     'PLUGINNAME' => 'test',                       # the plugin name, needs to be the same as the array name above
+     'PLUGINXML' => 'RSS',                         # the plugin xml chooser, it decides how to parse the xml file to at least return the url
+     'PLUGINURL' => 'http://example.com/rss.xml',  # the url location of the xml feed we are going to parse through
+     'PLUGINNODETAG' => 'item',                    # the <markup> that contains the feeds url, usually this is <item> but some sites use others
+     'PLUGINNODETAG2' => 'link',                   # the second <markup> within the above <markup> where the torrent url is contained, usually is link or sometimes guid
+     'PLUGINHACKS' => '1',                         # specify whether we want to write in a string (exec'd via eval) that changes around the url to point to the right location
+     'PLUGINHACKSEVAL' => '$finalurl = $url1;',    # $urls = NODETAG array, $url1 = current NODETAG2 value, $finalurl = what is inserted into the database; enjoy hacking
+     'PLUGINTORRAGE' => '0',                       # the PLUGINNODETAG2 contains an infohash, so we will instead grab the torrent from torrage.com
+     'PLUGINPROXY' => '0',                         # requests the page via a web proxy (specified in a define below these plugins)
+     'PLUGINPROXYSCRAPE' => '0',                   # requests the scrape via a web proxy
+  )                                                # close the 'test' array
+
+theres a few ways to set the PLUGINHACKS value too:
+ 0: do no regex with the url, default xml loading method
+ 1: only do some regex on the url, default xml loading method
+ 2: attempt to load the xml page a different way (helps with feeds that dont work with the default way of loading)
+ 3: attempt to load the xml page a different way, and do regex on the url
+
+same with PLUGINPROXY:
+ 0: just a normal request directly from this server, do not use a web proxy
+ 1: use the web proxy request, do not strip out anything added by the proxy (rare, but there are web proxies that dont add stuff to the requested page)
+ 2: use the web proxy request, and strip a defined string out of the page (helps when web proxies add a bar at the top of the screen, for example, glype)
