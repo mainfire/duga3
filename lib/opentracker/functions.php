@@ -4,16 +4,16 @@ $announce = "
 CREATE TABLE IF NOT EXISTS `announce`
 (
 	`id` int(30) NOT NULL AUTO_INCREMENT,
-	`hash` text NOT NULL,
-	`ip` text NOT NULL,
+	`hash` char(40) NOT NULL,
+	`ip` char(16) NOT NULL,
 	`port` int(5) NOT NULL,
 	`peerid` char(20) binary NOT NULL,
-	`event` text NOT NULL,
+	`event` char(15) NOT NULL,
 	`uploaded` bigint(20) unsigned NOT NULL default '0',
 	`downloaded` bigint(20) unsigned NOT NULL default '0',
 	`remain` bigint(20) unsigned NOT NULL default '0',
-	`timestamp` text NOT NULL,
-	`expire` text NOT NULL,
+	`timestamp` int(14) NOT NULL,
+	`expire` int(14) NOT NULL,
 	PRIMARY KEY (`id`)
 ) ENGINE=".MYSQLENGINE." AUTO_INCREMENT=1 DEFAULT CHARSET=".MYSQLCHARSET.";
 ";
