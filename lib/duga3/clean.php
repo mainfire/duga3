@@ -29,12 +29,8 @@ try #batter up
 		}
 		else
 		{
-			if ($db->query("select * from announce") === true)
-			{
-				$db->query("drop table announce");
-			}
-			$query2 = "drop table processed"; #truncate our process table of all entires
-			$query3 = "drop table trackers"; #truncate our trackers table of all entries
+			$query1 = "drop table processed"; #truncate our process table of all entires
+			$query2 = "drop table trackers"; #truncate our trackers table of all entries
 			$cachedir = LIBROOT."/".CACHEFOLDER;
 			if (is_dir($cachedir))
 			{
@@ -48,7 +44,7 @@ try #batter up
 					recursive_rmdir($torrents); #delete the entire directory
 				}
 			}
-			if ($db->query($query2) === true && $db->query($query3) === true) #if we can truncate both our tables
+			if ($db->query($query1) === true && $db->query($query2) === true) #if we can truncate both our tables
 			{
 				print "<p>nuked the entire database, <a href=index.php>reinstall</a>.</p>"; #then let me know that you did
 			}
