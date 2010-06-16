@@ -1,10 +1,6 @@
 <?php
 require_once 'config.php';
 require_once 'functions.php';
-if (FULLSCRAPE == 0)
-{
-	errorexit("fullscrapes are disabled on this tracker");
-}
 $infohash = (isset($_GET['info_hash'])) ? rtrim(strip_tags($_GET['info_hash'])) : null;
 $timestamp = time();
 header('Content-Type: text/plain;');
@@ -25,6 +21,10 @@ try
 	}
 	if (is_null($infohash))
 	{
+		if (FULLSCRAPE == 0)
+		{
+			errorexit("fullscrapes are disabled on this tracker");
+		}
 		$hashes = array();
 		$query = "select hash from announce where expire > $timestamp";
 		if ($result = $db->query($query))

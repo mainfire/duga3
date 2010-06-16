@@ -101,6 +101,25 @@ function hex2bin($str)
 	return $bin;
 }
 
+#validate our ip address
+function ipcheck($ip)
+{
+	$newip = ip2long($ip);
+	$newip2 = ip2long(gethostbyname($ip));
+	if ($newip == false || $newip == -1)
+	{
+		if ($newip2 == false || $newip2 == -1)
+		{
+			errorexit("invalid request (bad ip)");
+		}
+	}
+	else
+	{
+		return $ip;
+	}
+}
+
+#warning message (unused so far, only suppoted by "vuze")
 function warningexit($reason)
 {
 	die(bencode(array("warning message" => $reason)));
