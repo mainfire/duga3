@@ -21,9 +21,13 @@ try
 	{
 		errorexit("invalid request");
 	}
-	if (is_null($event))
+	if (is_null($event) && $left > 0)
 	{
-		$event = "checkin";
+		$event = "checked";
+	}
+	elseif (is_null($event) && $left == 0)
+	{
+		$event = "seeding";
 	}
 	$sha1infohash = strtoupper(bin2hex($infohash));
 	if (LISTTYPE == "blacklist")
@@ -87,7 +91,7 @@ try
 		{
 			while ($line = $newbie->fetch_object())
 			{
-				if ($line->event == "started" || $event == "checkin")
+				if ($line->event == "started" || $event == "checked")
 				{
 					$oldstamp = time() - ($line->timestamp-60);
 					if ($oldstamp <= (ANNOUNCE_INTERVAL*60))
