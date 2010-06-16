@@ -1,0 +1,20 @@
+﻿Дуга-3 / Duga-3 / Arc-3 - a bittorrent crawler
+
+Installing is simple, just fill out config.php. After that, make sure that the WEBROOT and LIBROOT directories are chmodded to 0777.
+This is because of automation with creating folders, etc. DO NOT CHMOD ANY DUGA-3 FILES TO 0777!! Be sure to check out the below 
+graph thing for a bit on how to set it up right.
+
+|-- [ web root (acessible) ]
+|-- index.php (an example file provided showing how to build a site around the database)
+|-- admin/
+|-- admin/index.php >--------->--------  (the "admin" interface, or crawler)
+|-- [ lib root (inacessible) ]         |
+|-- lib/                               v
+|-- lib/duga3                          |
+|-- lib/duga3/....                     |
+|-- lib/duga3/....                     |
+|-- lib/duga3/request.php <-----<------  (it needs to require_once "some/path/to_lib/duga/request.php";)
+
+From there, so long as your MySQL information is correct, just log into the admin interface and it will install itself.
+
+This is distributed under the new BSD license as a whole, with small (noted) bits which retain their original license.
