@@ -14,10 +14,7 @@ CREATE TABLE IF NOT EXISTS `announce`
 	`remain` bigint(20) unsigned NOT NULL default '0',
 	`timestamp` text NOT NULL,
 	`expire` text NOT NULL,
-	PRIMARY KEY (`id`),
-	FULLTEXT expire(expire),
-	FULLTEXT ip(ip),
-	FULLTEXT hash(hash)
+	PRIMARY KEY (`id`)
 ) ENGINE=".MYSQLENGINE." AUTO_INCREMENT=1 DEFAULT CHARSET=".MYSQLCHARSET.";
 ";
 
@@ -102,5 +99,10 @@ function hex2bin($str)
 	}
 	while ($i < strlen($str));
 	return $bin;
+}
+
+function warningexit($reason)
+{
+	die(bencode(array("warning message" => $reason)));
 }
 ?>

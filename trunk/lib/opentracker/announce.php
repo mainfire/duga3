@@ -14,12 +14,15 @@ $port = (isset($_GET['port'])) ? rtrim(addslashes(strip_tags($_GET['port']))) : 
 $uploaded = (isset($_GET['uploaded'])) ? rtrim(addslashes(strip_tags($_GET['uploaded']))) : null;
 $timestamp = time();
 header("Content-Type: text/plain");
-#header("Content-Type: text/plain; charset=utf-8");
 try
 {
 	if (is_null($infohash) || is_null($port) || !is_numeric($port) || is_null($peerid) || is_null($uploaded) || !is_numeric($uploaded) || is_null($downloaded) || !is_numeric($downloaded) || is_null($left) || !is_numeric($left) || (!is_null($event) && ($event != "started") && ($event != "completed") && ($event != "stopped")))
 	{
 		errorexit("invalid request");
+	}
+	if (is_null($event))
+	{
+		$event = "checkin";
 	}
 	$sha1infohash = strtoupper(bin2hex($infohash));
 	if (LISTTYPE == "blacklist")
@@ -63,23 +66,27 @@ try
 	{
 		$db->query($announce);
 	}
-	if ($db->query("delete from announce where expire < $timestamp") === true)
+	if (KEEP_HISTORY == 0)
 	{
-		$ratio = (ANNOUNCE_INTERVAL*60) + (ANNOUNCE_EXPIRE*60);
-		if (!is_null($event) && ($event == 'stopped'))
+		$db->query("delete from announce where expire < $timestamp");
+	}
+	$ratio = (ANNOUNCE_INTERVAL*60) + (ANNOUNCE_EXPIRE*60);
+	if (!is_null($event) && ($event == 'stopped'))
+	{
+		$expire = time() - $ratio - 5;
+	}
+	else
+	{
+		$expire = time() + $ratio;
+	}
+	$newbie = $db->query("select * from announce where ip = '$realip' and hash = '$sha1infohash' limit 1");
+	if ($newbie->num_rows > 0)
+	{
+		if (ANNOUNCE_ENFORCE == 1 && $event != "completed" && $event != "started" && $event != "stopped")
 		{
-			$expire = time() - $ratio - 5;
-		}
-		else
-		{
-			$expire = time() + $ratio;
-		}
-		$newbie = $db->query("select * from announce where ip = '$realip' and hash = '$sha1infohash' limit 1");
-		if ($newbie->num_rows > 0)
-		{
-			if (ANNOUNCE_ENFORCE == 1 && $event != "stopped")
+			while ($line = $newbie->fetch_object())
 			{
-				while ($line = $newbie->fetch_object())
+				if ($line->event == "started" || $event == "checkin")
 				{
 					$oldstamp = time() - ($line->timestamp-60);
 					if ($oldstamp <= (ANNOUNCE_INTERVAL*60))
@@ -88,53 +95,49 @@ try
 					}
 				}
 			}
-			$update = $db->query("update announce set downloaded = '$downloaded', expire = '$expire', event = '$event', port = '$port', remain = '$left', timestamp = '$timestamp', uploaded = '$uploaded' where hash = '$sha1infohash' and ip = '$realip' limit 1");
-			if (!$update)
-			{
-				errorexit('could not update the database!');
-			}
 		}
-		else
+		$update = $db->query("update announce set downloaded = '$downloaded', expire = '$expire', event = '$event', port = '$port', remain = '$left', timestamp = '$timestamp', uploaded = '$uploaded' where hash = '$sha1infohash' and ip = '$realip' limit 1");
+		if (!$update)
 		{
-			$insert = $db->query("insert into announce (downloaded,event,expire,hash,ip,remain,peerid,uploaded,timestamp) values ($downloaded,'$event',$expire,'$sha1infohash','$realip',$left,'$peerid',$uploaded,$timestamp)");
-			if (!$insert)
-			{
-				errorexit('could not insert into database!');
-			}
-		}
-		$peers = "select * from announce where hash = '$sha1infohash' and expire > $timestamp order by rand() limit $numwant";
-		if ($result = $db->query($peers))
-		{
-			if ($compact == 1)
-			{
-				$peers = null;
-				while ($line = $result->fetch_object())
-				{
-					$peers .= pack('Nn',$line->ip,$line->port);
-				}
-			}
-			elseif ($nopeerid == 1)
-			{
-				$peers = array();
-				while ($line = $result->fetch_object())
-				{
-					$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port);
-				}
-			}
-			else
-			{
-				$peers = array();
-				while ($line = $result->fetch_object())
-				{
-					$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
-				}
-			}
-			die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers)));
+			errorexit('could not update the database!');
 		}
 	}
 	else
 	{
-		errorexit('could not update the database!');
+		$insert = $db->query("insert into announce (downloaded,event,expire,hash,ip,remain,peerid,uploaded,timestamp) values ($downloaded,'$event',$expire,'$sha1infohash','$realip',$left,'$peerid',$uploaded,$timestamp)");
+		if (!$insert)
+		{
+			errorexit('could not insert into database!');
+		}
+	}
+	$peers = "select * from announce where hash = '$sha1infohash' and expire > $timestamp order by rand() limit $numwant";
+	if ($result = $db->query($peers))
+	{
+		if ($compact == 1)
+		{
+			$peers = null;
+			while ($line = $result->fetch_object())
+			{
+				$peers .= pack('Nn',$line->ip,$line->port);
+			}
+		}
+		elseif ($nopeerid == 1)
+		{
+			$peers = array();
+			while ($line = $result->fetch_object())
+			{
+				$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port);
+			}
+		}
+		else
+		{
+			$peers = array();
+			while ($line = $result->fetch_object())
+			{
+				$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
+			}
+		}
+		die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers)));
 	}
 	$db->query("optimize table announce");
 	$db->close();
