@@ -15,10 +15,12 @@ server level method to block users from requesting anything from the lib directo
 |-- lib/opentracker/functions.php      |
 |-- lib/opentracker/scrape.php <--<----
 
-As you can see, make sure that where you do put the client announce.php and scrape.php, make sure they point toward the right
-location (open the file to set the location).
+As you can see, make sure that where ever you do put the client announce.php and scrape.php, that they point toward the right
+location and file (open the file and set the location yourself, its 1 line).
 
-From there, all you need you to do is just create your torrent with your new announce url and run it; it will install itself.
+From there, all you need you to do is just create your torrent with your new announce url and run it; the tracker will install
+itself from there. You can clean the tracker out by dropping the announce table from MySQL, and after that it will again 
+reinstall itself the next time a client announces or scrapes.
 
 If you decide to use either the blacklist or whitelist, the idea in using it is to specify the 40 byte SHA1 infohash of a torrent
 in the array. In example:
@@ -30,6 +32,7 @@ $infohash_list = array
 );
 
 Depending on what list type is set, the tracker will either track only the above hashes, or everything except the above hashes.
+Any other value than "whitelist or "blacklist" will completely disable the list mechanism and the tracker will run 100% open.
 
 This is distributed under the new BSD license as a whole, with small (noted) portions reused from the original script. These
 portions are re-released under the public domain, since the original script did not include an actual license.
