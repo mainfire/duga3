@@ -1,0 +1,35 @@
+opentracker II - based on flippy's script
+
+Installing is simple, just fill out config.php. After that, make sure you put announce.php, scrape.php, and lib/ where you want
+them to be. The announce and scrape files that are NOT in lib/opentracker are the ones you have clients call. You should use a 
+server level method to block users from requesting anything from the lib directory, as a precaution. As an example
+
+|-- [ web root (acessible) ]
+|-- scrape.php >----------->-----------
+|-- announce.php >--------->---------  |
+|-- [ lib root (inacessible) ]       | |
+|-- lib/                             v v
+|-- lib/opentracker                  | |
+|-- lib/opentracker/announce.php <---  |
+|-- lib/opentracker/config.php         |
+|-- lib/opentracker/functions.php      |
+|-- lib/opentracker/scrape.php <--<----
+
+As you can see, make sure that where you do put the client announce.php and scrape.php, make sure they point toward the right
+location (open the file to set the location).
+
+From there, all you need you to do is just create your torrent with your new announce url and run it; it will install itself.
+
+If you decide to use either the blacklist or whitelist, the idea in using it is to specify the 40 byte SHA1 infohash of a torrent
+in the array. In example:
+
+$infohash_list = array
+(
+	'00F57EA41FA3504425F6E09EAE43F8325164A6B4',
+	'FBDD02B6A9F266434B412D1EBEC3897F771E8B07',
+);
+
+Depending on what list type is set, the tracker will either track only the above hashes, or everything except the above hashes.
+
+This is distributed under the new BSD license as a whole, with small (noted) portions reused from the original script. These
+portions are re-released under the public domain, since the original script did not include an actual license.
