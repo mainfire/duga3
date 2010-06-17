@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `announce`
 	`id` int(30) NOT NULL AUTO_INCREMENT,
 	`hash` char(40) NOT NULL,
 	`ip` char(16) NOT NULL,
+	`ipv6` char(50) NOT NULL,
 	`port` int(5) NOT NULL,
 	`peerid` char(20) binary NOT NULL,
 	`event` char(15) NOT NULL,
@@ -46,7 +47,7 @@ function announce_list($hash,$type)
 	}
 }
 
-#bencode function by flippy
+#bencode function by whitsoft
 function bencode($var)
 {
 	if (is_int($var))

@@ -1,4 +1,4 @@
-opentracker II - based on flippy's script
+opentracker II - based on Whitsoft's script
 
 Installing is simple, just fill out config.php. After that, make sure you put announce.php, scrape.php, and lib/ where you want
 them to be. The announce and scrape files that are NOT in lib/opentracker are the ones you have clients call. You should use a 
