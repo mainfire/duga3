@@ -47,8 +47,4 @@ define('LISTTYPE','blacklist'); #blacklist (allow all torrents except the listed
 define('KEEP_HISTORY','1'); #this is a function that is completely optional and doesnt directly affect the peer swarm in any way, but will adversely affect the scrape values:
 #if disabled, this will return the "downloads" scrape value as 0 for all torrents with faster processing (one less mysql query that involves more counting)
 #if enabled, it will show the amount of downloads as it should, at the cost of extra cpu power with a multitude of torrents (keeps a full history of all peer instances)
-
-$infohash_list = array #specify (uppercase) infohash strings to white / blacklist
-(
-);
 ?>
