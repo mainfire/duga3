@@ -18,6 +18,34 @@ CREATE TABLE IF NOT EXISTS `announce`
 ) ENGINE=".MYSQLENGINE." AUTO_INCREMENT=1 DEFAULT CHARSET=".MYSQLCHARSET.";
 ";
 
+function announce_list($hash,$type)
+{
+	if (!file_exists(LISTLOCATION) || filesize(LISTLOCATION) == 0)
+	{
+		file_put_contents(LISTLOCATION,null,LOCK_EX);
+		$infohashes = array();
+	}
+	else
+	{
+		$list = file_get_contents(LISTLOCATION);
+		$infohashes = explode("\n",$list);
+	}
+	if ($type == 1)
+	{
+		if (in_array($hash,$infohashes))
+		{
+			errorexit("invalid / blacklisted torrent");
+		}
+	}
+	elseif ($type == 2)
+	{
+		if (!in_array($hash,$infohashes))
+		{
+			errorexit("invalid / non-whitelisted torrent");
+		}
+	}
+}
+
 #bencode function by flippy
 function bencode($var)
 {

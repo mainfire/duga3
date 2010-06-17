@@ -41,6 +41,7 @@ define('ANNOUNCE_RETURN','100'); #our default amount of peers to return on an an
 define('FULLSCRAPE','2'); #fullscrape type: 0 for false (force to ask for specific infohashes), 1 for true, 2 for true with gzip
 define('SCRAPE_INTERVAL','60'); #value (in minutes) that is added onto the above ANNOUNCE_INTERVAL, you should make this double of the original value
 
+define('LISTLOCATION','C:\web\blacklist.txt'); #location of the below list file (example: /usr/home/kipz/blacklist or C:\web\blacklist.txt)
 define('LISTTYPE','blacklist'); #blacklist (allow all torrents except the listed hashes), whitelist (block all torrents except the listed hashes), anything else will disable both
 
 define('KEEP_HISTORY','1'); #this is a function that is completely optional and doesnt directly affect the peer swarm in any way, but will adversely affect the scrape values:

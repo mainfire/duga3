@@ -32,17 +32,11 @@ try
 	$sha1infohash = strtoupper(bin2hex($infohash));
 	if (LISTTYPE == "blacklist")
 	{
-		if (in_array($sha1infohash,$infohash_list))
-		{
-			errorexit("invalid / blacklisted torrent");
-		}
+		announce_list($sha1infohash,1);
 	}
 	elseif (LISTTYPE == "whitelist")
 	{
-		if (!in_array($sha1infohash,$infohash_list))
-		{
-			errorexit("invalid / non-whitelisted torrent");
-		}
+		announce_list($sha1infohash,2);
 	}
 	if (!is_null($numwant) && !is_int($numwant))
 	{
