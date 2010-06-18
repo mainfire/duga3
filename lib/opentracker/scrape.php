@@ -11,12 +11,13 @@ if (FULLSCRAPE == 2)
 try
 {
 	$db = new mysqli(MYSQLSERVER,MYSQLNAME,MYSQLPASSWORD,MYSQLBASE);
-	if ($db->query("select * from announce") === false || $db->query("select * from history") === false)
+	if (!$db->query("select * from announce") || !$db->query("select * from history"))
 	{
 		$db->query($announce);
 		$db->query($history);
 	}
 	$db->query("delete from announce where expire < $timestamp");
+	$db->query("delete from history where expire < $timestamp");
 	if (is_null($infohash))
 	{
 		if (FULLSCRAPE == 0)
@@ -64,25 +65,25 @@ try
 	$files = array();
 	foreach ($hashes as $hash)
 	{
-		$hashcheck = "select complete,incomplete,downloaded from history where match (hash) against ('\"".bin2hex($hash)."\"' IN BOOLEAN MODE) limit 1";
+		$hashcheck = "select complete,hash,incomplete,downloaded from history where match (hash) against ('\"".bin2hex($hash)."\"' IN BOOLEAN MODE) limit 1";
 		if ($rows = $db->prepare($hashcheck))
 		{
 			$rows->execute();
-			$rows->bind_result($complete,$incomplete,$downloaded);
+			$rows->bind_result($complete,$infohash,$incomplete,$downloaded);
 			while ($rows->fetch())
 			{
 				$seeds = $complete;
 				$leechs = $incomplete;
 				$snags = $downloaded;
+				$files[$hash] = array('complete'=>(int)$seeds,'incomplete'=>(int)$leechs,'downloaded'=>(int)$snags);
 			}
 			$rows->close();
 		}
-		$files[$hash] = array('complete'=>(int)$seeds,'incomplete'=>(int)$leechs,'downloaded'=>(int)$snags);
 	}
-	die(bencode(array('files'=>$files,'flags'=>array('min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)))));
 	$db->query("optimize table announce");
 	$db->query("optimize table history");
 	$db->close();
+	die(bencode(array('files'=>$files,'flags'=>array('min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)))));
 }
 catch(Exception $e)
 {

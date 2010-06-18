@@ -21,6 +21,7 @@ try
 	{
 		errorexit("invalid request");
 	}
+	$sha1infohash = strtoupper(bin2hex($infohash));
 	if (is_null($event) && $left > 0)
 	{
 		$event = "checked";
@@ -29,7 +30,6 @@ try
 	{
 		$event = "seeding";
 	}
-	$sha1infohash = strtoupper(bin2hex($infohash));
 	if (LISTTYPE == "blacklist")
 	{
 		announce_list($sha1infohash,1);
@@ -61,12 +61,13 @@ try
 		}
 	}
 	$db = new mysqli(MYSQLSERVER,MYSQLNAME,MYSQLPASSWORD,MYSQLBASE);
-	if ($db->query("select * from announce") === false || $db->query("select * from history") === false)
+	if (!$db->query("select * from announce") || !$db->query("select * from history"))
 	{
 		$db->query($announce);
 		$db->query($history);
 	}
 	$db->query("delete from announce where expire < $timestamp");
+	$db->query("delete from history where expire < $timestamp");
 	$ratio = (ANNOUNCE_INTERVAL*60) + (ANNOUNCE_EXPIRE*60);
 	if (!is_null($event) && ($event == 'stopped'))
 	{
@@ -112,32 +113,32 @@ try
 	{
 		if ($event == "started" && $left == 0)
 		{
-			$update = $db->query("update history set complete = complete + 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			$update1 = $db->query("update history set complete = complete + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
 		}
 		elseif ($event == "completed" && $left == 0)
 		{
-			$update = $db->query("update history set complete = complete + 1, downloaded = downloaded + 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			$update1 = $db->query("update history set complete = complete + 1, downloaded = downloaded + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
 		}
 		elseif ($event == "stopped" && $left == 0)
 		{
-			$update = $db->query("update history set complete = complete - 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			$update1 = $db->query("update history set complete = complete - 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
 		}
 		elseif ($event == "started" && $left > 0)
 		{
-			$update = $db->query("update history set incomplete = incomplete + 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			$update1 = $db->query("update history set incomplete = incomplete + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
 		}
 		elseif ($event == "stopped" && $left > 0)
 		{
-			$update = $db->query("update history set incomplete = incomplete - 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			$update1 = $db->query("update history set incomplete = incomplete - 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
 		}
-		if (!$update)
+		if (!$update1)
 		{
 			errorexit('could not update the database!');
 		}
 	}
 	else
 	{
-		$insert = $db->query("insert into history (hash,incomplete,timestamp) values ('$sha1infohash',1,$timestamp)");
+		$insert = $db->query("insert into history (expire,hash,incomplete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
 		if (!$insert)
 		{
 			errorexit('could not insert into database!');
