@@ -13,7 +13,7 @@ decide, thats for the people who write clients to decide if they want to support
 	- unpacking is hardly any effort, a verbose way would look like this in PHP (be sure to make note of the 40, othwerise you'll only unpack 1 character)
 	unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$output);
 
-	- an to clarify, this would be requested in the exact same manner as a compact announce; just make sure the scrape url looks like this in the end:
-	  1: /scrape?info_hash[]=___&info_hash[]=___&compact
+	- and to clarify, this would be requested in the exact same manner as a compact announce; just make sure the scrape url looks like this in the end:
+	  1: /scrape?info_hash=___&info_hash=___&compact
 	  2: /scrape?info_hash=___&compact
 	  3: /scrape?compact
