@@ -126,6 +126,18 @@ $announce_blacklist = array #specify announce urls that will be replaced with AN
 #below is our plugin array
 $plugins = array
 (
+	'1337x' => array
+	(
+		'PLUGINNAME' => '1337x',
+		'PLUGINXML' => 'RSS',
+		'PLUGINURL' => 'http://1337x.org/rss/cat/all/',
+		'PLUGINNODETAG' => 'enclosure',
+		'PLUGINNODETAG2' => 'url',
+		'PLUGINHACKS' => '1',
+		'PLUGINHACKSEVAL' => '$finalurl = $node->getAttribute($currentplugin["PLUGINNODETAG2"]);',
+		'PLUGINPROXY' => '0',
+		'PLUGINPROXYSCRAPE' => '0',
+	),
 	'btjunkie' => array
 	(
 		'PLUGINNAME' => 'btjunkie',
