@@ -152,7 +152,7 @@ try
 		queue_array_save($serialize,$queuedarray,1);
 		$db->query("optimize table processed");
 		$db->close();
-		print "<p><a href=?site=".SITECRAWL."&execute=process>process</a>, or <a href=index.php>finish</a>....</p>";
+		print "<p><a href=?site=none&execute=process>process</a>, or <a href=index.php>finish</a>....</p>";
 	}
 	if (file_exists($tempxml))
 	{
