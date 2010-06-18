@@ -19,6 +19,21 @@ CREATE TABLE IF NOT EXISTS `announce`
 ) ENGINE=".MYSQLENGINE." AUTO_INCREMENT=1 DEFAULT CHARSET=".MYSQLCHARSET.";
 ";
 
+#our history mysql table, do not modify this!
+$history = "
+CREATE TABLE IF NOT EXISTS `history`
+(
+	`id` int(30) NOT NULL AUTO_INCREMENT,
+	`hash` char(40) NOT NULL,
+	`complete` bigint(20) unsigned NOT NULL default '0',
+	`incomplete` bigint(20) unsigned NOT NULL default '0',
+	`downloaded` bigint(20) unsigned NOT NULL default '0',
+	`timestamp` int(14) NOT NULL,
+	FULLTEXT hash(hash),
+	PRIMARY KEY (`id`)
+) ENGINE=".MYSQLENGINE." AUTO_INCREMENT=1 DEFAULT CHARSET=".MYSQLCHARSET.";
+";
+
 function announce_list($hash,$type)
 {
 	if (!file_exists(LISTLOCATION) || filesize(LISTLOCATION) == 0)

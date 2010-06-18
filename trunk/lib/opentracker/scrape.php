@@ -11,14 +11,12 @@ if (FULLSCRAPE == 2)
 try
 {
 	$db = new mysqli(MYSQLSERVER,MYSQLNAME,MYSQLPASSWORD,MYSQLBASE);
-	if (KEEP_HISTORY == 0)
-	{
-		$db->query("delete from announce where expire < $timestamp");
-	}
-	if ($db->query("select * from announce") === false)
+	if ($db->query("select * from announce") === false || $db->query("select * from history") === false)
 	{
 		$db->query($announce);
+		$db->query($history);
 	}
+	$db->query("delete from announce where expire < $timestamp");
 	if (is_null($infohash))
 	{
 		if (FULLSCRAPE == 0)
@@ -26,7 +24,7 @@ try
 			errorexit("fullscrapes are disabled on this tracker");
 		}
 		$hashes = array();
-		$query = "select hash from announce where expire > $timestamp";
+		$query = "select hash from history";
 		if ($result = $db->query($query))
 		{
 			while ($line = $result->fetch_object())
@@ -51,7 +49,7 @@ try
 				{
 					$sha1hash = bin2hex($hash);
 				}
-				$hashexists = $db->query("select * from announce where hash = '$sha1hash' and expire > $timestamp limit 1");
+				$hashexists = $db->query("select * from history where match (hash) against ('\"$sha1hash\"' IN BOOLEAN MODE) limit 1");
 				if ($hashexists->num_rows > 0)
 				{
 					$hashes[] = hex2bin($sha1hash);
@@ -66,41 +64,26 @@ try
 	$files = array();
 	foreach ($hashes as $hash)
 	{
-		$complete = "select count(*) from announce where hash = '$hash' and remain = 0 and expire > $timestamp";
-		$incomplete = "select count(*) from announce where hash = '$hash' and remain > 0 and expire > $timestamp";
-		if (KEEP_HISTORY == 1)
+		$hash1 = bin2hex($hash);
+		$hashcheck = $db->query("select * from history where match (hash) against ('\"$hash1\"' IN BOOLEAN MODE) limit 1");
+		if ($hashcheck->num_rows > 0)
 		{
-			$downloaded = "select count(distinct ip,port) from announce where hash = '$hash' and remain = 0";
-			if ($line3 = $db->prepare($downloaded))
+			while ($line1 = $hashcheck->fetch_object())
 			{
-				$line3->execute();
-				$line3->store_result();
-				$snags = intval($line3->num_rows(),0);
-				$line3->close();
+				$seeds = $line1->complete;
+				$leechs = $line1->incomplete;
+				$snags = $line1->downloaded;
+				$files[$hash] = array('complete'=>(int)$seeds,'incomplete'=>(int)$leechs,'downloaded'=>(int)$snags);
 			}
 		}
 		else
 		{
-			$snags = 0;
+			errorexit("php sucks");
 		}
-		if ($line = $db->prepare($complete))
-		{
-			$line->execute();
-			$line->store_result();
-			$seeds = intval($line->num_rows(),0);
-			$line->close();
-		}
-		if ($line2 = $db->prepare($incomplete))
-		{
-			$line2->execute();
-			$line2->store_result();
-			$leechs = intval($line2->num_rows(),0);
-			$line2->close();
-		}
-		$files[$hash] = array('complete'=>$seeds,'incomplete'=>$leechs,'downloaded'=>(int)$snags);
 	}
 	die(bencode(array('files'=>$files,'flags'=>array('min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)))));
 	$db->query("optimize table announce");
+	$db->query("optimize table history");
 	$db->close();
 }
 catch(Exception $e)

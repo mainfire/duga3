@@ -1,1 +1,9 @@
 needs an example of how to upload a new torrent to the database, specifically one that can be handled with the current layout of the crawler (ie, not breaking it, etc).
+
+needs a better way to catch the "inner exceptions" within the pecl_http fetch, also needs an equivilent post method in pecl_http
+
+needs a completely new fullscrape implemetation, one that doesnt require the amount of ram it does now
+
+completed method that allows you to make use of publicbts compressed scrape which is updated every 5 or so minutes, but works in the same manner as the fullscrape (see above)
+
+include interface to opentracker, ie a method for users to upload new whitelisted torrents (since the list is in flatfile format; this interface would automatically be compatible with erdgeists opentracker software, for example)

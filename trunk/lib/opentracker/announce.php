@@ -61,14 +61,12 @@ try
 		}
 	}
 	$db = new mysqli(MYSQLSERVER,MYSQLNAME,MYSQLPASSWORD,MYSQLBASE);
-	if ($db->query("select * from announce") === false)
+	if ($db->query("select * from announce") === false || $db->query("select * from history") === false)
 	{
 		$db->query($announce);
+		$db->query($history);
 	}
-	if (KEEP_HISTORY == 0)
-	{
-		$db->query("delete from announce where expire < $timestamp");
-	}
+	$db->query("delete from announce where expire < $timestamp");
 	$ratio = (ANNOUNCE_INTERVAL*60) + (ANNOUNCE_EXPIRE*60);
 	if (!is_null($event) && ($event == 'stopped'))
 	{
@@ -78,12 +76,12 @@ try
 	{
 		$expire = time() + $ratio;
 	}
-	$newbie = $db->query("select * from announce where ip = '$realip' and hash = '$sha1infohash' limit 1");
-	if ($newbie->num_rows > 0)
+	$newip = $db->query("select * from announce where ip = '$realip' and hash = '$sha1infohash' limit 1");
+	if ($newip->num_rows > 0)
 	{
 		if (ANNOUNCE_ENFORCE == 1 && $event != "completed" && $event != "started" && $event != "stopped")
 		{
-			while ($line = $newbie->fetch_object())
+			while ($line = $newip->fetch_object())
 			{
 				if ($line->event == "started" || $event == "checked")
 				{
@@ -95,7 +93,7 @@ try
 				}
 			}
 		}
-		$update = $db->query("update announce set downloaded = '$downloaded', expire = '$expire', event = '$event', port = '$port', remain = '$left', timestamp = '$timestamp', uploaded = '$uploaded' where hash = '$sha1infohash' and ip = '$realip' limit 1");
+		$update = $db->query("update announce set downloaded = '$downloaded', event = '$event', expire = '$expire', port = '$port', remain = '$left', timestamp = '$timestamp', uploaded = '$uploaded' where hash = '$sha1infohash' and ip = '$realip' limit 1");
 		if (!$update)
 		{
 			errorexit('could not update the database!');
@@ -104,6 +102,42 @@ try
 	else
 	{
 		$insert = $db->query("insert into announce (downloaded,event,expire,hash,ip,remain,peerid,uploaded,timestamp) values ($downloaded,'$event',$expire,'$sha1infohash','$realip',$left,'$peerid',$uploaded,$timestamp)");
+		if (!$insert)
+		{
+			errorexit('could not insert into database!');
+		}
+	}
+	$newhash = $db->query("select * from history where hash = '$sha1infohash' limit 1");
+	if ($newhash->num_rows > 0)
+	{
+		if ($event == "started" && $left == 0)
+		{
+			$update = $db->query("update history set complete = complete + 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+		}
+		elseif ($event == "completed" && $left == 0)
+		{
+			$update = $db->query("update history set complete = complete + 1, downloaded = downloaded + 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+		}
+		elseif ($event == "stopped" && $left == 0)
+		{
+			$update = $db->query("update history set complete = complete - 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+		}
+		elseif ($event == "started" && $left > 0)
+		{
+			$update = $db->query("update history set incomplete = incomplete + 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+		}
+		elseif ($event == "stopped" && $left > 0)
+		{
+			$update = $db->query("update history set incomplete = incomplete - 1 where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+		}
+		if (!$update)
+		{
+			errorexit('could not update the database!');
+		}
+	}
+	else
+	{
+		$insert = $db->query("insert into history (hash,incomplete,timestamp) values ('$sha1infohash',1,$timestamp)");
 		if (!$insert)
 		{
 			errorexit('could not insert into database!');
@@ -139,6 +173,7 @@ try
 		die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers)));
 	}
 	$db->query("optimize table announce");
+	$db->query("optimize table history");
 	$db->close();
 }
 catch(Exception $e)
