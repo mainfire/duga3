@@ -64,22 +64,20 @@ try
 	$files = array();
 	foreach ($hashes as $hash)
 	{
-		$hash1 = bin2hex($hash);
-		$hashcheck = $db->query("select * from history where match (hash) against ('\"$hash1\"' IN BOOLEAN MODE) limit 1");
-		if ($hashcheck->num_rows > 0)
+		$hashcheck = "select complete,incomplete,downloaded from history where match (hash) against ('\"".bin2hex($hash)."\"' IN BOOLEAN MODE) limit 1";
+		if ($rows = $db->prepare($hashcheck))
 		{
-			while ($line1 = $hashcheck->fetch_object())
+			$rows->execute();
+			$rows->bind_result($complete,$incomplete,$downloaded);
+			while ($rows->fetch())
 			{
-				$seeds = $line1->complete;
-				$leechs = $line1->incomplete;
-				$snags = $line1->downloaded;
-				$files[$hash] = array('complete'=>(int)$seeds,'incomplete'=>(int)$leechs,'downloaded'=>(int)$snags);
+				$seeds = $complete;
+				$leechs = $incomplete;
+				$snags = $downloaded;
 			}
+			$rows->close();
 		}
-		else
-		{
-			errorexit("php sucks");
-		}
+		$files[$hash] = array('complete'=>(int)$seeds,'incomplete'=>(int)$leechs,'downloaded'=>(int)$snags);
 	}
 	die(bencode(array('files'=>$files,'flags'=>array('min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)))));
 	$db->query("optimize table announce");
