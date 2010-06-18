@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS `announce`
 	`remain` bigint(20) unsigned NOT NULL default '0',
 	`timestamp` int(14) NOT NULL,
 	`expire` int(14) NOT NULL,
+	FULLTEXT hash(hash),
+	FULLTEXT ip(ip),
+	FULLTEXT ipv6(ipv6),
 	PRIMARY KEY (`id`)
 ) ENGINE=".MYSQLENGINE." AUTO_INCREMENT=1 DEFAULT CHARSET=".MYSQLCHARSET.";
 ";
@@ -25,9 +28,9 @@ CREATE TABLE IF NOT EXISTS `history`
 (
 	`id` int(30) NOT NULL AUTO_INCREMENT,
 	`hash` char(40) NOT NULL,
-	`complete` bigint(20) unsigned NOT NULL default '0',
-	`incomplete` bigint(20) unsigned NOT NULL default '0',
-	`downloaded` bigint(20) unsigned NOT NULL default '0',
+	`complete` int(8) NOT NULL default '0',
+	`incomplete` int(8) NOT NULL default '0',
+	`downloaded` int(8) NOT NULL default '0',
 	`timestamp` int(14) NOT NULL,
 	FULLTEXT hash(hash),
 	PRIMARY KEY (`id`)
