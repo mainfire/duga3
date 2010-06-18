@@ -101,8 +101,7 @@ try
 	$db->close();
 	if (!is_null($compact))
 	{
-		#die($output);
-		die(print_r(unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$output)));
+		die($output);
 	}
 	else
 	{

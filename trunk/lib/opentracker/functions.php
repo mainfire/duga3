@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `history`
 ) ENGINE=".MYSQLENGINE." AUTO_INCREMENT=1 DEFAULT CHARSET=".MYSQLCHARSET.";
 ";
 
+#determines what to do with (or without) our list
 function announce_list($hash,$type)
 {
 	if (!file_exists(LISTLOCATION) || filesize(LISTLOCATION) == 0)
