@@ -155,7 +155,7 @@ try #batter up
 		print "<input style=width:300px; name=search type=text /> ";
 		print "<select name=searchin>";
 		print "<option value=hash>hash</option>";
-		print "<!--<option value=name>name</option>-->";
+		print "<option value=name>name</option>";
 		print "</select> ";
 		print "<input value=submit type=submit />";
 		print "</form>";

@@ -18,3 +18,6 @@ graph thing for a bit on how to set it up right.
 From there, so long as your MySQL information is correct, just log into the admin interface and it will install itself.
 
 This is distributed under the new BSD license as a whole, with small (noted) bits which retain their original license.
+As for usability, this has been tested and works on BSD, Linux, and Win32 PHP installations.
+
+Extra thanks to avuc.nl for providing an account on a Debian box to do further testing on :)
