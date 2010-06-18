@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `history`
 	`incomplete` int(8) NOT NULL default '0',
 	`downloaded` int(8) NOT NULL default '0',
 	`timestamp` int(14) NOT NULL,
+	`expire` int(14) NOT NULL,
 	FULLTEXT hash(hash),
 	PRIMARY KEY (`id`)
 ) ENGINE=".MYSQLENGINE." AUTO_INCREMENT=1 DEFAULT CHARSET=".MYSQLCHARSET.";
