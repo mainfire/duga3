@@ -1,6 +1,7 @@
 <?php
 require_once 'config.php';
 require_once 'functions.php';
+$compact = (isset($_GET['compact'])) ? 1 : null;
 $infohash = (isset($_GET['info_hash'])) ? rtrim(strip_tags($_GET['info_hash'])) : null;
 $timestamp = time();
 header('Content-Type: text/plain;');
@@ -62,20 +63,35 @@ try
 			}
 		}
 	}
-	$files = array();
+	if (!is_null($compact))
+	{
+		$output = null;
+	}
+	else
+	{
+		$files = array();
+	}
 	foreach ($hashes as $hash)
 	{
-		$hashcheck = "select complete,hash,incomplete,downloaded from history where match (hash) against ('\"".bin2hex($hash)."\"' IN BOOLEAN MODE) limit 1";
+		$hash1 = bin2hex($hash);
+		$hashcheck = "select complete,incomplete,downloaded from history where match (hash) against ('\"$hash1\"' IN BOOLEAN MODE) limit 1";
 		if ($rows = $db->prepare($hashcheck))
 		{
 			$rows->execute();
-			$rows->bind_result($complete,$infohash,$incomplete,$downloaded);
+			$rows->bind_result($complete,$incomplete,$downloaded);
 			while ($rows->fetch())
 			{
 				$seeds = $complete;
 				$leechs = $incomplete;
 				$snags = $downloaded;
-				$files[$hash] = array('complete'=>(int)$seeds,'incomplete'=>(int)$leechs,'downloaded'=>(int)$snags);
+				if (!is_null($compact))
+				{
+					$output .= pack('H40nnn',$hash1,$seeds,$leechs,$snags);
+				}
+				else
+				{
+					$files[$hash] = array('complete'=>(int)$seeds,'incomplete'=>(int)$leechs,'downloaded'=>(int)$snags);
+				}
 			}
 			$rows->close();
 		}
@@ -83,7 +99,15 @@ try
 	$db->query("optimize table announce");
 	$db->query("optimize table history");
 	$db->close();
-	die(bencode(array('files'=>$files,'flags'=>array('min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)))));
+	if (!is_null($compact))
+	{
+		#die($output);
+		die(print_r(unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$output)));
+	}
+	else
+	{
+		die(bencode(array('files'=>$files,'flags'=>array('min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)))));
+	}
 }
 catch(Exception $e)
 {

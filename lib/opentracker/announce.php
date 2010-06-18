@@ -138,7 +138,22 @@ try
 	}
 	else
 	{
-		$insert = $db->query("insert into history (expire,hash,incomplete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
+		if ($event == "started" && $left == 0)
+		{
+			$insert = $db->query("insert into history (expire,hash,complete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
+		}
+		elseif ($event == "completed" && $left == 0)
+		{
+			$insert = $db->query("insert into history (expire,hash,complete,downloaded,timestamp) values ($expire,'$sha1infohash',1,1,$timestamp)");
+		}
+		elseif ($event == "stopped" && $left == 0 || $left > 0)
+		{
+			$insert = $db->query("insert into history (expire,hash,timestamp) values ($expire,'$sha1infohash',$timestamp)");
+		}
+		elseif ($event == "started" && $left > 0)
+		{
+			$insert = $db->query("insert into history (expire,hash,incomplete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
+		}
 		if (!$insert)
 		{
 			errorexit('could not insert into database!');
