@@ -6,8 +6,9 @@ $nopeerid = (isset($_GET['no_peer_id'])) ? 1 : 0;
 $downloaded = (isset($_GET['downloaded'])) ? rtrim(addslashes(strip_tags($_GET['downloaded']))) : null;
 $event = (isset($_GET['event'])) ? rtrim(addslashes(strip_tags($_GET['event']))) : null;
 $infohash = (isset($_GET['info_hash'])) ? rtrim(strip_tags($_GET['info_hash'])) : null;
-$ip = (isset($_GET['ip'])) ? rtrim(strip_tags($_GET['ip'])) : null;
-$realip = $_SERVER['REMOTE_ADDR'];
+#$ip = (isset($_GET['ipv4'])) ? rtrim(strip_tags($_GET['ipv4'])) : null;
+$ipv6 = (isset($_GET['ipv6'])) ? rtrim(strip_tags($_GET['ipv6'])) : null;
+$realip = ipv4check($_SERVER['REMOTE_ADDR']);
 $left = (isset($_GET['left'])) ? rtrim(addslashes(strip_tags($_GET['left']))) : null;
 $numwant = (isset($_GET['numwant'])) ? rtrim(addslashes(strip_tags($_GET['numwant']))) : ANNOUNCE_RETURN;
 $peerid = (isset($_GET['peer_id'])) ? rtrim(addslashes(strip_tags($_GET['peer_id']))) : null;
@@ -22,7 +23,6 @@ try
 		errorexit("invalid request");
 	}
 	$sha1infohash = strtoupper(bin2hex($infohash));
-	$iptype = ipcheck($realip);
 	if (is_null($event) && $left > 0)
 	{
 		$event = "checked";
@@ -103,7 +103,7 @@ try
 	}
 	else
 	{
-		$insert = $db->query("insert into announce (downloaded,event,expire,hash,ip,remain,peerid,uploaded,timestamp) values ($downloaded,'$event',$expire,'$sha1infohash','$realip',$left,'$peerid',$uploaded,$timestamp)");
+		$insert = $db->query("insert into announce (downloaded,event,expire,hash,ip,ipv6,remain,peerid,uploaded,timestamp) values ($downloaded,'$event',$expire,'$sha1infohash','$realip','$ipv6',$left,'$peerid',$uploaded,$timestamp)");
 		if (!$insert)
 		{
 			errorexit('could not insert into database!');
@@ -160,10 +160,10 @@ try
 			errorexit('could not insert into database!');
 		}
 	}
-	$peers = "select * from announce where hash = '$sha1infohash' and expire > $timestamp order by rand() limit $numwant";
-	if ($result = $db->query($peers))
+	$peersquery = "select * from announce where hash = '$sha1infohash' and expire > $timestamp order by rand() limit $numwant";
+	if ($result = $db->query($peersquery))
 	{
-		if ($compact == 1)
+		if ($compact == 1 && is_null($ipv6))
 		{
 			$peers = null;
 			while ($line = $result->fetch_object())
@@ -176,7 +176,14 @@ try
 			$peers = array();
 			while ($line = $result->fetch_object())
 			{
-				$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port);
+				#if (!is_null($ipv6))
+				#{
+					#$peers[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port);
+				#}
+				#else
+				#{
+					$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port);
+				#}
 			}
 		}
 		else
@@ -184,10 +191,24 @@ try
 			$peers = array();
 			while ($line = $result->fetch_object())
 			{
-				$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
+				#if (!is_null($ipv6))
+				#{
+					#$peers[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
+				#}
+				#else
+				#{
+					$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
+				#}
 			}
 		}
-		die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers)));
+		#if (!is_null($ipv6))
+		#{
+			#die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers6'=>$peers)));
+		#}
+		#else
+		#{
+			die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers)));
+		#}
 	}
 	$db->query("optimize table announce");
 	$db->query("optimize table history");

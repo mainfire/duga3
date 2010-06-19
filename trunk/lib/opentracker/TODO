@@ -1,5 +1,3 @@
-very lacking of any ipv6 support
-
 perhaps a sync method using the new history table (could use the below implementation)
 
 i have a compact scrape method in mind, it works just like a compact announce, but whether or not this would make any use by adding it in isnt for me to 

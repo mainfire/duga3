@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `announce`
 	`id` int(30) NOT NULL AUTO_INCREMENT,
 	`hash` char(40) NOT NULL,
 	`ip` char(16) NOT NULL,
-	`ipv6` char(50) NOT NULL,
+	`ipv6` char(40) NOT NULL,
 	`port` int(5) NOT NULL,
 	`peerid` char(20) binary NOT NULL,
 	`event` char(15) NOT NULL,
@@ -139,35 +139,19 @@ function hex2bin($str)
 }
 
 #validate our ip address
-function ipcheck($ip)
+function ipv4check($ip)
 {
-	$ipv4 = explode('.',$ip);
-	$ipv6 = explode(':',$ip);
-	if (count($ipv4) > 0)
+	$newip = ip2long($ip);
+	$newip2 = ip2long(gethostbyname($ip));
+	if ($newip == false || $newip == -1)
 	{
-		if (!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))
+		if ($newip2 == false || $newip2 == -1)
 		{
 			errorexit("invalid request (bad ip)");
 		}
-		else
-		{
-			return "4";
-		}
 	}
-	elseif (count($ipv6) > 0)
 	{
-		if (!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))
-		{
-			errorexit("invalid request (bad ip)");
-		}
-		else
-		{
-			return "6";
-		}
-	}
-	else
-	{
-		errorexit("invalid request (bad ip)");
+		return $ip;
 	}
 }
 
