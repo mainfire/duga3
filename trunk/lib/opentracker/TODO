@@ -16,6 +16,9 @@ decide, thats for the people who write clients to decide if they want to support
 	- a fullscrape method would require you to the same as above, but you will need to break up each chunk which is seperated by "{|}" (no quotations).
 	  the reasoning for the "{|}" is the compact method used can generate a lot of random characters that could possibly end up next to each other, so
 	  we'll see how long it takes to break this format (naturally, of course)
+	  unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$output)
+	  $array = explode('{|}',$output);
+	  foreach ($array as $infohash) { /* ... */ }
 
 	- and to clarify, this would be requested in the exact same manner as a compact announce; just make sure the scrape url looks like this in the end:
 	  1: /scrape?info_hash=___&info_hash=___&compact
