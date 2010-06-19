@@ -163,7 +163,8 @@ try
 	$peersquery = "select * from announce where hash = '$sha1infohash' and expire > $timestamp order by rand() limit $numwant";
 	if ($result = $db->query($peersquery))
 	{
-		if ($compact == 1 && is_null($ipv6))
+		#if ($compact == 1 && is_null($ipv6)) #eh, lets not break things further shall we?
+		if ($compact == 1)
 		{
 			$peers = null;
 			while ($line = $result->fetch_object())
@@ -178,7 +179,10 @@ try
 			{
 				#if (!is_null($ipv6))
 				#{
-					#$peers[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port);
+					#if (!is_null$line->ipv6))
+					#{
+						#$peers[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port);
+					#}
 				#}
 				#else
 				#{
@@ -193,7 +197,10 @@ try
 			{
 				#if (!is_null($ipv6))
 				#{
-					#$peers[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
+					#if (!is_null$line->ipv6))
+					#{
+						#$peers[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
+					#}
 				#}
 				#else
 				#{
