@@ -13,7 +13,7 @@ class bencode
 			trigger_error("Could not create BEncodeReader for {$filename}: failed to read file", E_USER_WARNING);
 			return;
 		}
-		$this->set_data($data);
+		$this->set_data(unserialize($data));
 	}
 	function set_data($var)
 	{
