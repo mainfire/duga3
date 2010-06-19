@@ -65,6 +65,7 @@ try
 	}
 	if (!is_null($compact))
 	{
+		$amount = 0;
 		$output = null;
 	}
 	else
@@ -86,7 +87,12 @@ try
 				$snags = $downloaded;
 				if (!is_null($compact))
 				{
+					if ($amount > 0)
+					{
+						$output .= "{|}"; #if you happen to be fullscraping, you can use explode the {|}, which seperates each infohashes stats
+					}
 					$output .= pack('H40nnn',$hash1,$seeds,$leechs,$snags);
+					$amount = $amount + 1;
 				}
 				else
 				{
