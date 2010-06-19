@@ -63,7 +63,7 @@ try
 			}
 		}
 	}
-	if (!is_null($compact))
+	if (COMPACT_SCRAPE == 1 && !is_null($compact))
 	{
 		$amount = 0;
 		$output = null;
@@ -85,7 +85,7 @@ try
 				$seeds = $complete;
 				$leechs = $incomplete;
 				$snags = $downloaded;
-				if (!is_null($compact))
+				if (COMPACT_SCRAPE == 1 && !is_null($compact))
 				{
 					if ($amount > 0)
 					{
@@ -105,13 +105,13 @@ try
 	$db->query("optimize table announce");
 	$db->query("optimize table history");
 	$db->close();
-	if (!is_null($compact))
+	if (COMPACT_SCRAPE == 1 && !is_null($compact))
 	{
 		die($output);
 	}
 	else
 	{
-		die(bencode(array('files'=>$files,'flags'=>array('min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)))));
+		die(bencode(array('files'=>$files,'flags'=>array('compact_scrape'=>(int)COMPACT_SCRAPE,'min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)))));
 	}
 }
 catch(Exception $e)
