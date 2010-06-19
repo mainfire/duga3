@@ -155,6 +155,7 @@ try #batter up
 			<li><a href="./?site=none&execute=process">process</a></li>
 			<li><a href="./?site=none&execute=update">scrape</a></li>
 			<li><a href="./?site=none&execute=update2">fullscrape</a></li>
+			<li><a href="./?site=none&execute=update3">publicbt fullscrape</a></li>
 			<li><a href="./?site=none&execute=stats">stats</a></li>
 <?php
 			if (COPYTORRENT == 1)
