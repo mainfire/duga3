@@ -80,6 +80,9 @@ else
 					case 'update2':
 						require_once 'update2.php';
 					break;
+					case 'update3':
+						require_once 'update3.php';
+					break;
 					default:
 						require_once 'front.php';
 					break;
