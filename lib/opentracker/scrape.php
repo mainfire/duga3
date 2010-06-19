@@ -74,7 +74,7 @@ try
 	}
 	foreach ($hashes as $hash)
 	{
-		$hash1 = bin2hex($hash);
+		$hash1 = strtoupper(bin2hex($hash));
 		$hashcheck = "select complete,incomplete,downloaded from history where match (hash) against ('\"$hash1\"' IN BOOLEAN MODE) limit 1";
 		if ($rows = $db->prepare($hashcheck))
 		{
