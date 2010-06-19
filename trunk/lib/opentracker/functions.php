@@ -141,18 +141,33 @@ function hex2bin($str)
 #validate our ip address
 function ipcheck($ip)
 {
-	$newip = ip2long($ip);
-	$newip2 = ip2long(gethostbyname($ip));
-	if ($newip == false || $newip == -1)
+	$ipv4 = explode('.',$ip);
+	$ipv6 = explode(':',$ip);
+	if (count($ipv4) > 0)
 	{
-		if ($newip2 == false || $newip2 == -1)
+		if (!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))
 		{
 			errorexit("invalid request (bad ip)");
+		}
+		else
+		{
+			return "4";
+		}
+	}
+	elseif (count($ipv6) > 0)
+	{
+		if (!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))
+		{
+			errorexit("invalid request (bad ip)");
+		}
+		else
+		{
+			return "6";
 		}
 	}
 	else
 	{
-		return $ip;
+		errorexit("invalid request (bad ip)");
 	}
 }
 

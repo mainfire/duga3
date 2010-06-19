@@ -6,8 +6,8 @@ $nopeerid = (isset($_GET['no_peer_id'])) ? 1 : 0;
 $downloaded = (isset($_GET['downloaded'])) ? rtrim(addslashes(strip_tags($_GET['downloaded']))) : null;
 $event = (isset($_GET['event'])) ? rtrim(addslashes(strip_tags($_GET['event']))) : null;
 $infohash = (isset($_GET['info_hash'])) ? rtrim(strip_tags($_GET['info_hash'])) : null;
-$ip = (isset($_GET['ip'])) ? ipcheck(rtrim(strip_tags($_GET['ip']))) : null;
-$realip = ipcheck($_SERVER['REMOTE_ADDR']);
+$ip = (isset($_GET['ip'])) ? rtrim(strip_tags($_GET['ip'])) : null;
+$realip = $_SERVER['REMOTE_ADDR'];
 $left = (isset($_GET['left'])) ? rtrim(addslashes(strip_tags($_GET['left']))) : null;
 $numwant = (isset($_GET['numwant'])) ? rtrim(addslashes(strip_tags($_GET['numwant']))) : ANNOUNCE_RETURN;
 $peerid = (isset($_GET['peer_id'])) ? rtrim(addslashes(strip_tags($_GET['peer_id']))) : null;
@@ -22,6 +22,7 @@ try
 		errorexit("invalid request");
 	}
 	$sha1infohash = strtoupper(bin2hex($infohash));
+	$iptype = ipcheck($realip);
 	if (is_null($event) && $left > 0)
 	{
 		$event = "checked";
