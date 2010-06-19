@@ -53,9 +53,9 @@ try #batter up
 					}
 				}
 				fclose($scrapehandle);
-				$scrapereader = new BEncodeReader(); #create a new decode instance
-				$scrapereader->setData($bencoded); #set the fullscrape data
-				$rawdata = $scrapereader->readNext(); #begin decode
+				$scrapereader = new bdecode(); #create a new decode instance
+				$scrapereader->set_data($bencoded); #set the fullscrape data
+				$rawdata = $scrapereader->read_next(); #begin decode
 				if ($rawdata != false)
 				{
 					foreach($array as $torrent)

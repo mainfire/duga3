@@ -82,8 +82,8 @@ try #batter up
 				}
 				else
 				{
-					$torrentreader = new BEncodeReader($temptorrent);
-					$torrent = $torrentreader->readNext();
+					$torrentreader = new bdecode($temptorrent);
+					$torrent = $torrentreader->read_next();
 					if($torrent != false)
 					{
 						$infohash = $torrent['info_hash']; #get the infohash of the torrent

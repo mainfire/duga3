@@ -225,11 +225,15 @@ try
 		$db->close();
 		#if (!is_null($ipv6))
 		#{
-			#die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers6'=>$peers)));
+			#$announce6 = new bencode();
+			#$announce6 = $announce->set_data(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers6'=>$peers));
+			#die($announce6);
 		#}
 		#else
 		#{
-			die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers)));
+			$announce = new bencode();
+			$announce = $announce->set_data(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers));
+			die($announce);
 		#}
 	}
 }

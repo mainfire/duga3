@@ -111,7 +111,9 @@ try
 	}
 	else
 	{
-		die(bencode(array('files'=>$files,'flags'=>array('compact_scrape'=>(int)COMPACT_SCRAPE,'min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)))));
+		$scrape = new bencode();
+		$scrape = $scrape->set_data(array('files'=>$files,'flags'=>array('compact_scrape'=>(int)COMPACT_SCRAPE,'min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60))));
+		die($scrape);
 	}
 }
 catch(Exception $e)

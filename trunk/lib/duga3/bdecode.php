@@ -1,10 +1,10 @@
 <?php
 #code originally written by Greg Poole (m4dm4n@gmail.com)
 define('MAX_INTEGER_LENGTH', 12);
-class BEncodeReader
+class bdecode
 {
 	var	$data, $pointer = 0, $data_length = null;
-	function BEncodeReader($filename = null)
+	function bdecode($filename = null)
 	{
 		if(is_null($filename))
 		{
@@ -12,17 +12,17 @@ class BEncodeReader
 		}
 		if(($data = @file_get_contents($filename)) === false)
 		{
-			trigger_error("Could not create BEncodeReader for {$filename}: failed to read file", E_USER_WARNING);
+			trigger_error("Could not create bdecode for {$filename}: failed to read file", E_USER_WARNING);
 			return;
 		}
-		$this->setData($data);
+		$this->set_data($data);
 	}
-	function setData($data)
+	function set_data($data)
 	{
 		$this->data_length = strlen($data);
 		$this->data = $data;
 	}
-	function readNext()
+	function read_next()
 	{
 		if(is_null($this->data_length))
 		{
@@ -33,30 +33,30 @@ class BEncodeReader
 			switch($this->data[$this->pointer++])
 			{
 				case 'l':
-					return $this->readNextList();
+					return $this->read_list();
 				case 'd':
-					return $this->readNextDictionary();
+					return $this->read_dictionary();
 				case 'i':
-					return $this->readNextInteger();
+					return $this->next_integer();
 				default:
 					$this->pointer--;
-					return $this->readNextString();
+					return $this->next_string();
 			}
 		}
 	}
-	function readNextDictionary()
+	function read_dictionary()
 	{
 		$dictionary = array();
 		while($this->data[$this->pointer] != 'e')
 		{
-			$key = $this->readNextString();
+			$key = $this->next_string();
 			if($key !== false)
 			{
 				if($key == "info")
 				{
 					$info_start = $this->pointer;
 				}
-				$dictionary[$key] = $this->readNext();
+				$dictionary[$key] = $this->read_next();
 				if($key == "info")
 				{
 					$dictionary['info_hash'] = strtoupper(sha1(substr($this->data, $info_start, $this->pointer - $info_start)));
@@ -71,12 +71,12 @@ class BEncodeReader
 		$this->pointer++;
 		return $dictionary;
 	}
-	function readNextList()
+	function read_list()
 	{
 		$list = array();
 		while($this->data[$this->pointer] != 'e')
 		{
-			$next = $this->readNext();
+			$next = $this->read_next();
 			if($next === false)
 			{
 				return false;
@@ -86,7 +86,7 @@ class BEncodeReader
 		$this->pointer++;
 		return $list;
 	}
-	function readNextString()
+	function next_string()
 	{
 		$colon = strpos($this->data, ":", $this->pointer);
 		if($colon === false || ($colon - $this->pointer) > MAX_INTEGER_LENGTH)
@@ -99,7 +99,7 @@ class BEncodeReader
 		$this->pointer += $length;
 		return $str;
 	}
-	function readNextInteger()
+	function next_integer()
 	{
 		$end = strpos($this->data, "e", $this->pointer);	
 		if($end === false || ($end - $this->pointer) > MAX_INTEGER_LENGTH)

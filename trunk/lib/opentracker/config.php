@@ -34,7 +34,7 @@ define('MYSQLCHARSET','utf8'); #utf8 is highly recommended, latin1 if utf8 is no
 
 define('ANNOUNCE_TYPE','1'); #announce time: 0 to force no_peer_id, 1 for normal, 2 for compact
 define('ANNOUNCE_INTERVAL','30'); #the amount of time to wait between announces
-define('ANNOUNCE_ENFORCE','1'); #enforce the above announce interval by not responding to clients who announce too early / often
+define('ANNOUNCE_ENFORCE','0'); #enforce the above announce interval by not responding to clients who announce too early / often
 define('ANNOUNCE_EXPIRE','30'); #amount of time (in minutes) before the peer is considered "expired" (as in, they have no announced in this amount of time)
 define('ANNOUNCE_RETURN','100'); #our default amount of peers to return on an announce request (if not specified, will be overridden by client)
 

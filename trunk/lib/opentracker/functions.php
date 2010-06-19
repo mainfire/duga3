@@ -1,4 +1,5 @@
 <?php
+require_once 'bencode.php';
 #our announce mysql table, do not modify this!
 $announce = "
 CREATE TABLE IF NOT EXISTS `announce`
@@ -67,61 +68,12 @@ function announce_list($hash,$type)
 	}
 }
 
-#bencode function by whitsoft
-function bencode($var)
-{
-	if (is_int($var))
-	{
-		return 'i'.$var.'e';
-	}
-	elseif (is_array($var))
-	{
-		if (count($var) == 0)
-		{
-			return 'de';
-		}
-		else
-		{
-			$assoc = false;
-			foreach ($var as $key => $val)
-			{
-				if (!is_int($key))
-				{
-					$assoc = true;
-					break;
-				}
-			}
-			if ($assoc)
-			{
-				ksort($var, SORT_REGULAR);
-				$ret = 'd';
-				foreach ($var as $key => $val)
-				{
-					$ret .= bencode($key).bencode($val);
-				}
-				return $ret.'e';
-			}
-			else
-			{
-				$ret = 'l';
-				foreach ($var as $val)
-				{
-					$ret .= bencode($val);
-				}
-				return $ret.'e';
-			}
-		}
-	}
-	else
-	{
-		return strlen($var).':'.$var;
-	}
-}
-
 #bencode an error response (tracker only)
 function errorexit($reason)
 {
-	die(bencode(array("failure reason" => $reason)));
+	$error = new bencode();
+	$error = $error->set_data(array("failure reason"=>$reason));
+	die($error);
 }
 
 #convert our sha1 infohash back intos binary format
@@ -183,11 +135,5 @@ function ipdetermine($ip)
 	{
 		return $ip.';4';
 	}
-}
-
-#warning message (unused so far, only suppoted by "vuze")
-function warningexit($reason)
-{
-	die(bencode(array("warning message" => $reason)));
 }
 ?>
