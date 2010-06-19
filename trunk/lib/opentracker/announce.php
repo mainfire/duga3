@@ -220,6 +220,9 @@ try
 				#}
 			}
 		}
+		$db->query("optimize table announce");
+		$db->query("optimize table history");
+		$db->close();
 		#if (!is_null($ipv6))
 		#{
 			#die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers6'=>$peers)));
@@ -229,9 +232,6 @@ try
 			die(bencode(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers)));
 		#}
 	}
-	$db->query("optimize table announce");
-	$db->query("optimize table history");
-	$db->close();
 }
 catch(Exception $e)
 {
