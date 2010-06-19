@@ -6,9 +6,9 @@ $nopeerid = (isset($_GET['no_peer_id'])) ? 1 : 0;
 $downloaded = (isset($_GET['downloaded'])) ? rtrim(addslashes(strip_tags($_GET['downloaded']))) : null;
 $event = (isset($_GET['event'])) ? rtrim(addslashes(strip_tags($_GET['event']))) : null;
 $infohash = (isset($_GET['info_hash'])) ? rtrim(strip_tags($_GET['info_hash'])) : null;
-#$ip = (isset($_GET['ipv4'])) ? rtrim(strip_tags($_GET['ipv4'])) : null;
-$ipv6 = (isset($_GET['ipv6'])) ? rtrim(strip_tags($_GET['ipv6'])) : null;
-$realip = ipv4check($_SERVER['REMOTE_ADDR']);
+$ipv4 = (isset($_GET['ipv4'])) ? ipcheck(rtrim(strip_tags($_GET['ipv4'])),4) : null;
+$ipv6 = (isset($_GET['ipv6'])) ? ipcheck(rtrim(strip_tags($_GET['ipv6'])),6) : null;
+$requestip = explode(';',ipdetermine($_SERVER['REMOTE_ADDR']));
 $left = (isset($_GET['left'])) ? rtrim(addslashes(strip_tags($_GET['left']))) : null;
 $numwant = (isset($_GET['numwant'])) ? rtrim(addslashes(strip_tags($_GET['numwant']))) : ANNOUNCE_RETURN;
 $peerid = (isset($_GET['peer_id'])) ? rtrim(addslashes(strip_tags($_GET['peer_id']))) : null;
@@ -23,6 +23,14 @@ try
 		errorexit("invalid request");
 	}
 	$sha1infohash = strtoupper(bin2hex($infohash));
+	if ($requestip[1] == 4) #here we need to make sure we only insert ipv4 into the ip row, ipv6 into the ipv6 table
+	{
+		$realip = $requestip[0];
+	}
+	elseif ($requestip[1] == 6)
+	{
+		$realip = $ipv4;
+	}
 	if (is_null($event) && $left > 0)
 	{
 		$event = "checked";
@@ -147,7 +155,11 @@ try
 		{
 			$insert = $db->query("insert into history (expire,hash,complete,downloaded,timestamp) values ($expire,'$sha1infohash',1,1,$timestamp)");
 		}
-		elseif ($event == "stopped" && $left == 0 || $left > 0)
+		elseif ($event == "stopped" && $left == 0)
+		{
+			$insert = $db->query("insert into history (expire,hash,timestamp) values ($expire,'$sha1infohash',$timestamp)");
+		}
+		elseif ($event == "stopped" && $left > 0)
 		{
 			$insert = $db->query("insert into history (expire,hash,timestamp) values ($expire,'$sha1infohash',$timestamp)");
 		}

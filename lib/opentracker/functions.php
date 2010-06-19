@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `announce`
 	`ip` char(16) NOT NULL,
 	`ipv6` char(40) NOT NULL,
 	`port` int(5) NOT NULL,
-	`peerid` char(20) binary NOT NULL,
+	`peerid` char(40) binary NOT NULL,
 	`event` char(15) NOT NULL,
 	`uploaded` bigint(20) unsigned NOT NULL default '0',
 	`downloaded` bigint(20) unsigned NOT NULL default '0',
@@ -139,19 +139,49 @@ function hex2bin($str)
 }
 
 #validate our ip address
-function ipv4check($ip)
+function ipcheck($ip,$type)
 {
-	$newip = ip2long($ip);
-	$newip2 = ip2long(gethostbyname($ip));
-	if ($newip == false || $newip == -1)
+	if ($type == 4)
 	{
-		if ($newip2 == false || $newip2 == -1)
+		if (!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))
 		{
 			errorexit("invalid request (bad ip)");
 		}
+		else
+		{
+			return $ip;
+		}
 	}
+	elseif ($type == 6)
 	{
-		return $ip;
+		if (!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV6))
+		{
+			errorexit("invalid request (bad ip6)");
+		}
+		else
+		{
+			return $ip;
+		}
+	}
+}
+
+#determine whether this client is making a request from an ipv4 or ipv6 address
+function ipdetermine($ip)
+{
+	if (!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))
+	{
+		if (!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV6))
+		{
+			errorexit("invalid request (bad ip)");
+		}
+		else
+		{
+			return $ip.';6';
+		}
+	}
+	else
+	{
+		return $ip.';4';
 	}
 }
 
