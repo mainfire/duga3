@@ -6,12 +6,16 @@ i have a compact scrape method in mind, it works just like a compact announce, b
 decide, thats for the people who write clients to decide if they want to support it or not. heres the idea that i've done a rough implenetation of:
 
 	- as per some compliance with the original compact announce, which would pack the peer IP address (unsigned long, big endian), followed by the peer
-	port (unsigned short, big endian), the scrape method would pack the sha1 infohash (hex string, high nibble), followed by complete, incomplete, and
-	downloaded values (all unsigned short, big endian). so far this seems to cut the scrape size down to about 1/2 / 1/3 of what it is in bencoded
-	format.
+	  port (unsigned short, big endian), the scrape method would pack the sha1 infohash (hex string, high nibble), followed by complete, incomplete, and
+	  downloaded values (all unsigned short, big endian). so far this seems to cut the scrape size down to about 1/2 / 1/3 of what it is in bencoded
+	  format.
 
 	- unpacking is hardly any effort, a verbose way would look like this in PHP (be sure to make note of the 40, othwerise you'll only unpack 1 character)
-	unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$output);
+	  unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$output);
+	
+	- a fullscrape method would require you to the same as above, but you will need to break up each chunk which is seperated by "{|}" (no quotations).
+	  the reasoning for the "{|}" is the compact method used can generate a lot of random characters that could possibly end up next to each other, so
+	  we'll see how long it takes to break this format (naturally, of course)
 
 	- and to clarify, this would be requested in the exact same manner as a compact announce; just make sure the scrape url looks like this in the end:
 	  1: /scrape?info_hash=___&info_hash=___&compact
