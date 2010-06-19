@@ -130,8 +130,8 @@ try #batter up
 			}
 			else #otherwise, it looks like the tracker responded properly
 			{
-				$scrapereader = new BEncodeReader($tempscrape); #parse our scrape contents
-				$rawdata = $scrapereader->readNext(); #begin decode
+				$scrapereader = new bdecode($tempscrape); #parse our scrape contents
+				$rawdata = $scrapereader->read_next(); #begin decode
 				$seeds = decode_scrape($rawdata,"seeds",$infohash);
 				$leechs = decode_scrape($rawdata,"leechs",$infohash);
 				$snags = decode_scrape($rawdata,"snags",$infohash);
