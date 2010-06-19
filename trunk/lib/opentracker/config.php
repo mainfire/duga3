@@ -38,6 +38,7 @@ define('ANNOUNCE_ENFORCE','1'); #enforce the above announce interval by not resp
 define('ANNOUNCE_EXPIRE','30'); #amount of time (in minutes) before the peer is considered "expired" (as in, they have no announced in this amount of time)
 define('ANNOUNCE_RETURN','100'); #our default amount of peers to return on an announce request (if not specified, will be overridden by client)
 
+define('COMPACT_SCRAPE','1'); #enable the new "compact" scrape method, though unsupported, its there
 define('FULLSCRAPE','2'); #fullscrape type: 0 for false (force to ask for specific infohashes), 1 for true, 2 for true with gzip
 define('SCRAPE_INTERVAL','60'); #value (in minutes) that is added onto the above ANNOUNCE_INTERVAL, you should make this double of the original value
 
