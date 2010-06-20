@@ -12,3 +12,8 @@ since we have a nice bencode class in opentracker that works a lot like duga-3's
 	- this would be hugely helpful for removing the dead trackers from torrents crawled from (in example) the pirate bay, which would in turn give more reliable torrents for everyone
 
 include interface to opentracker, ie a method for users to upload new whitelisted torrents (since the list is in flatfile format; this interface would automatically be compatible with erdgeists opentracker software, for example)
+
+include the torrage crawler as an idea on how to do a full site crawl (this implementation works, but i'm yet to find any torrents this way - this is because we generate random 40 byte infohashes)
+
+	- this crawler works differently than what already exists (ie, a feed crawler) and thus will behave "slower" at first glance
+	- this was just an experiment to see if it would be possible, and it is indeed possible to crawl a site from "torrentid" 1 all the way up to the latest 
