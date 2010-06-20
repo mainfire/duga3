@@ -9,21 +9,36 @@ decide, thats for the people who write clients to decide if they want to support
 	  format.
 
 	- unpacking is hardly any effort, a verbose way would look like this in PHP (be sure to make note of the 40, othwerise you'll only unpack 1 character)
+
+	  /*
+	       do something to retrieve the scrape, output is assigned to $output
+	  */
 	  $newoutput = unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$output);
-	
+	  $sha1infohash = $newoutput['infohash'];
+	  $complete = $newoutput['complete'];
+	  $incomplete = $newoutput['incomplete'];
+	  $downloaded = $newoutput['downloaded'];
+	  /*
+	       do something with the data here
+	  */
+
 	- a fullscrape method would require you to the same as above, but you will need to break up each chunk which is seperated by "{|}" (no quotations).
 	  the reasoning for the "{|}" is the compact method used can generate a lot of random characters that could possibly end up next to each other, so
 	  we'll see how long it takes to break this format (naturally, of course)
-	  $array = explode('{|}',$newoutput);
+
+	  /*
+	       do something to retrieve the scrape, output is assigned to $output
+	  */
+	  $array = explode('{|}',$output);
 	  foreach ($array as $infohash)
 	  {
-	       $newoutput = unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$infohash);
+		   $newoutput = unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$infohash);
 		   $sha1infohash = $newoutput['infohash'];
 		   $complete = $newoutput['complete'];
 		   $incomplete = $newoutput['incomplete'];
 		   $downloaded = $newoutput['downloaded'];
 		   /*
-		        do something here
+		        do something with the data here
 		   */
 	  }
 
@@ -31,9 +46,9 @@ decide, thats for the people who write clients to decide if they want to support
 	  1: /scrape?info_hash=___&info_hash=___&compact
 	  2: /scrape?info_hash=___&compact
 	  3: /scrape?compact
-	  
+
 	- i don't make any claims over this idea, i'm sure someone else has already came up with this by now, so do whatever with it
-	  
+ 
 ipv6 is implemented in such a way to implement what is documented on the below url, but it is commented out due to being unsupported by any clients
 
 	- http://www.bittorrent.org/beps/bep_0007.html#rationale
