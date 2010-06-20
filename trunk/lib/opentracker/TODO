@@ -22,3 +22,9 @@ decide, thats for the people who write clients to decide if they want to support
 	  1: /scrape?info_hash=___&info_hash=___&compact
 	  2: /scrape?info_hash=___&compact
 	  3: /scrape?compact
+	  
+	- i don't make any claims over this idea, i'm sure someone else has already came up with this by now, so do whatever with it
+	  
+ipv6 is implemented in such a way to implement what is documented on the below url, but it is commented out due to being unsupported by any clients
+
+	- http://www.bittorrent.org/beps/bep_0007.html#rationale
