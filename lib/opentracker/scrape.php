@@ -1,7 +1,7 @@
 <?php
 require_once 'config.php';
 require_once 'functions.php';
-$compact = (isset($_GET['compact'])) ? 1 : null;
+$compact = (isset($_GET['compact'])) ? 1 : 0;
 $infohash = (isset($_GET['info_hash'])) ? rtrim(strip_tags($_GET['info_hash'])) : null;
 $timestamp = time();
 header('Content-Type: text/plain;');
@@ -63,7 +63,7 @@ try
 			}
 		}
 	}
-	if (COMPACT_SCRAPE == 1 && !is_null($compact))
+	if (COMPACT_SCRAPE == 1 && $compact == 1)
 	{
 		$amount = 0;
 		$output = null;
@@ -85,7 +85,7 @@ try
 				$seeds = $complete;
 				$leechs = $incomplete;
 				$snags = $downloaded;
-				if (COMPACT_SCRAPE == 1 && !is_null($compact))
+				if (COMPACT_SCRAPE == 1 && $compact == 1)
 				{
 					if ($amount > 0)
 					{
@@ -105,7 +105,7 @@ try
 	$db->query("optimize table announce");
 	$db->query("optimize table history");
 	$db->close();
-	if (COMPACT_SCRAPE == 1 && !is_null($compact))
+	if (COMPACT_SCRAPE == 1 && $compact == 1)
 	{
 		die($output);
 	}

@@ -43,9 +43,9 @@ decide, thats for the people who write clients to decide if they want to support
 	  }
 
 	- and to clarify, this would be requested in the exact same manner as a compact announce; just make sure the scrape url looks like this in the end:
-	  1: /scrape?info_hash=___&info_hash=___&compact
-	  2: /scrape?info_hash=___&compact
-	  3: /scrape?compact
+	  1: /scrape?info_hash=___&info_hash=___&compact=1
+	  2: /scrape?info_hash=___&compact=1
+	  3: /scrape?compact=1
 
 	- i don't make any claims over this idea, i'm sure someone else has already came up with this by now, so do whatever with it
  
