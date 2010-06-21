@@ -63,15 +63,7 @@ try
 			}
 		}
 	}
-	if (COMPACT_SCRAPE == 1 && $compact == 1)
-	{
-		$files = null;
-		$amount = 0;
-	}
-	else
-	{
-		$files = array();
-	}
+	$files = array();
 	foreach ($hashes as $hash)
 	{
 		$hash1 = strtoupper(bin2hex($hash));
@@ -87,12 +79,7 @@ try
 				$snags = $downloaded;
 				if (COMPACT_SCRAPE == 1 && $compact == 1)
 				{
-					if ($amount > 0)
-					{
-						$files .= "{|}";
-					}
-					$files .= pack('H40n3',$hash1,$seeds,$leechs,$snags);
-					$amount = $amount + 1;
+					$files[$hash] = pack('n3',$seeds,$leechs,$snags);
 				}
 				else
 				{

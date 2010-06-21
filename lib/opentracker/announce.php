@@ -119,9 +119,9 @@ try
 			errorexit('could not insert into database!');
 		}
 	}
+	$newhash = $db->query("select * from history where hash = '$sha1infohash' limit 1");
 	if ($event != "checked" && $left > 0 || $event != "seeding" && $left == 0)
 	{
-		$newhash = $db->query("select * from history where hash = '$sha1infohash' limit 1");
 		if ($newhash->num_rows > 0)
 		{
 			if ($event == "started" && $left == 0)
@@ -168,6 +168,39 @@ try
 				$insert = $db->query("insert into history (expire,hash,timestamp) values ($expire,'$sha1infohash',$timestamp)");
 			}
 			elseif ($event == "started" && $left > 0)
+			{
+				$insert = $db->query("insert into history (expire,hash,incomplete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
+			}
+			if (!$insert)
+			{
+				errorexit('could not insert into database!');
+			}
+		}
+	}
+	else
+	{
+		if ($newhash->num_rows > 0)
+		{
+			if ($event == "seeding" && $left == 0)
+			{
+				$update1 = $db->query("update history set expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			}
+			elseif ($event == "checked" && $left > 0)
+			{
+				$update1 = $db->query("update history set expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			}
+			if (!$update1)
+			{
+				errorexit('could not update the database!');
+			}
+		}
+		else
+		{
+			if ($event == "seeding" && $left == 0)
+			{
+				$insert = $db->query("insert into history (expire,hash,complete,downloaded,timestamp) values ($expire,'$sha1infohash',1,1,$timestamp)");
+			}
+			elseif ($event == "checked" && $left > 0)
 			{
 				$insert = $db->query("insert into history (expire,hash,incomplete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
 			}
