@@ -1,7 +1,7 @@
 <?php
 require_once 'config.php';
 require_once 'functions.php';
-$compact = (isset($_GET['compact'])) ? 1 : 0;
+$compact = (isset($_GET['compact'])) ? rtrim(strip_tags($_GET['compact'])) : 0;
 $infohash = (isset($_GET['info_hash'])) ? rtrim(strip_tags($_GET['info_hash'])) : null;
 $timestamp = time();
 header('Content-Type: text/plain;');
@@ -43,13 +43,13 @@ try
 			if (!is_null($hash) || $hash != " ")
 			{
 				$hashes = array();
-				if (strlen($infohash) == 40)
+				if (strlen($infohash) != 40)
 				{
-					$sha1hash = strtoupper($infohash);
+					$sha1hash = strtoupper(bin2hex($hash));
 				}
 				else
 				{
-					$sha1hash = bin2hex($hash);
+					$sha1hash = strtoupper($infohash);
 				}
 				$hashexists = $db->query("select * from history where match (hash) against ('\"$sha1hash\"' IN BOOLEAN MODE) limit 1");
 				if ($hashexists->num_rows > 0)
@@ -65,8 +65,8 @@ try
 	}
 	if (COMPACT_SCRAPE == 1 && $compact == 1)
 	{
+		$files = null;
 		$amount = 0;
-		$output = null;
 	}
 	else
 	{
@@ -89,9 +89,9 @@ try
 				{
 					if ($amount > 0)
 					{
-						$output .= "{|}"; #if you happen to be fullscraping, you can use explode the {|}, which seperates each infohashes stats
+						$files .= "{|}";
 					}
-					$output .= pack('H40nnn',$hash1,$seeds,$leechs,$snags);
+					$files .= pack('H40n3',$hash1,$seeds,$leechs,$snags);
 					$amount = $amount + 1;
 				}
 				else
@@ -105,16 +105,16 @@ try
 	$db->query("optimize table announce");
 	$db->query("optimize table history");
 	$db->close();
-	if (COMPACT_SCRAPE == 1 && $compact == 1)
+	$scrape = new bencode();
+	if (COMPACT_SCRAPE != 1)
 	{
-		die($output);
+		$scrape = $scrape->set_data(array('files'=>$files,'flags'=>array('min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60))));
 	}
 	else
 	{
-		$scrape = new bencode();
-		$scrape = $scrape->set_data(array('files'=>$files,'flags'=>array('compact_scrape'=>(int)COMPACT_SCRAPE,'min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60))));
-		die($scrape);
+		$scrape = $scrape->set_data(array('files'=>$files,'flags'=>array('compact_scrape'=>(int)1,'min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60))));
 	}
+	die($scrape);
 }
 catch(Exception $e)
 {

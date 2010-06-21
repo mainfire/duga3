@@ -1,8 +1,8 @@
 <?php
 require_once 'config.php';
 require_once 'functions.php';
-$compact = (isset($_GET['compact'])) ? 1 : 0;
-$nopeerid = (isset($_GET['no_peer_id'])) ? 1 : 0;
+$compact = (isset($_GET['compact'])) ? rtrim(strip_tags($_GET['compact'])) : 0;
+$nopeerid = (isset($_GET['no_peer_id'])) ? rtrim(strip_tags($_GET['no_peer_id'])) : 0;
 $downloaded = (isset($_GET['downloaded'])) ? rtrim(addslashes(strip_tags($_GET['downloaded']))) : null;
 $event = (isset($_GET['event'])) ? rtrim(addslashes(strip_tags($_GET['event']))) : null;
 $infohash = (isset($_GET['info_hash'])) ? rtrim(strip_tags($_GET['info_hash'])) : null;
@@ -26,10 +26,12 @@ try
 	if ($requestip[1] == 4) #here we need to make sure we only insert ipv4 into the ip row, ipv6 into the ipv6 table
 	{
 		$realip = $requestip[0];
+		$iptype = 4;
 	}
 	elseif ($requestip[1] == 6)
 	{
 		$realip = $ipv4;
+		$iptype = 6;
 	}
 	if (is_null($event) && $left > 0)
 	{
@@ -117,59 +119,62 @@ try
 			errorexit('could not insert into database!');
 		}
 	}
-	$newhash = $db->query("select * from history where hash = '$sha1infohash' limit 1");
-	if ($newhash->num_rows > 0)
+	if ($event != "checked" && $left > 0 || $event != "seeding" && $left == 0)
 	{
-		if ($event == "started" && $left == 0)
+		$newhash = $db->query("select * from history where hash = '$sha1infohash' limit 1");
+		if ($newhash->num_rows > 0)
 		{
-			$update1 = $db->query("update history set complete = complete + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			if ($event == "started" && $left == 0)
+			{
+				$update1 = $db->query("update history set complete = complete + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			}
+			elseif ($event == "completed" && $left == 0)
+			{
+				$update1 = $db->query("update history set complete = complete + 1, downloaded = downloaded + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			}
+			elseif ($event == "stopped" && $left == 0)
+			{
+				$update1 = $db->query("update history set complete = complete - 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			}
+			elseif ($event == "started" && $left > 0)
+			{
+				$update1 = $db->query("update history set incomplete = incomplete + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			}
+			elseif ($event == "stopped" && $left > 0)
+			{
+				$update1 = $db->query("update history set incomplete = incomplete - 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+			}
+			if (!$update1)
+			{
+				errorexit('could not update the database!');
+			}
 		}
-		elseif ($event == "completed" && $left == 0)
+		else
 		{
-			$update1 = $db->query("update history set complete = complete + 1, downloaded = downloaded + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
-		}
-		elseif ($event == "stopped" && $left == 0)
-		{
-			$update1 = $db->query("update history set complete = complete - 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
-		}
-		elseif ($event == "started" && $left > 0)
-		{
-			$update1 = $db->query("update history set incomplete = incomplete + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
-		}
-		elseif ($event == "stopped" && $left > 0)
-		{
-			$update1 = $db->query("update history set incomplete = incomplete - 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
-		}
-		if (!$update1)
-		{
-			errorexit('could not update the database!');
-		}
-	}
-	else
-	{
-		if ($event == "started" && $left == 0)
-		{
-			$insert = $db->query("insert into history (expire,hash,complete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
-		}
-		elseif ($event == "completed" && $left == 0)
-		{
-			$insert = $db->query("insert into history (expire,hash,complete,downloaded,timestamp) values ($expire,'$sha1infohash',1,1,$timestamp)");
-		}
-		elseif ($event == "stopped" && $left == 0)
-		{
-			$insert = $db->query("insert into history (expire,hash,timestamp) values ($expire,'$sha1infohash',$timestamp)");
-		}
-		elseif ($event == "stopped" && $left > 0)
-		{
-			$insert = $db->query("insert into history (expire,hash,timestamp) values ($expire,'$sha1infohash',$timestamp)");
-		}
-		elseif ($event == "started" && $left > 0)
-		{
-			$insert = $db->query("insert into history (expire,hash,incomplete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
-		}
-		if (!$insert)
-		{
-			errorexit('could not insert into database!');
+			if ($event == "started" && $left == 0)
+			{
+				$insert = $db->query("insert into history (expire,hash,complete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
+			}
+			elseif ($event == "completed" && $left == 0)
+			{
+				$insert = $db->query("insert into history (expire,hash,complete,downloaded,timestamp) values ($expire,'$sha1infohash',1,1,$timestamp)");
+			}
+			elseif ($event == "stopped" && $left == 0)
+			{
+				$insert = $db->query("insert into history (expire,hash,timestamp) values ($expire,'$sha1infohash',$timestamp)");
+			}
+			elseif ($event == "stopped" && $left > 0)
+			{
+				$insert = $db->query("insert into history (expire,hash,timestamp) values ($expire,'$sha1infohash',$timestamp)");
+			}
+			elseif ($event == "started" && $left > 0)
+			{
+				$insert = $db->query("insert into history (expire,hash,incomplete,timestamp) values ($expire,'$sha1infohash',1,$timestamp)");
+			}
+			if (!$insert)
+			{
+				errorexit('could not insert into database!');
+			}
 		}
 	}
 	$peersquery = "select * from announce where hash = '$sha1infohash' and expire > $timestamp order by rand() limit $numwant";
@@ -179,6 +184,7 @@ try
 		if ($compact == 1)
 		{
 			$peers = null;
+			$peers6 = null; #this is here so we do not get an "undefined variable" error - sooner or later i'll try the expiermental ipv6 compact mentioned by some people
 			while ($line = $result->fetch_object())
 			{
 				$peers .= pack('Nn',$line->ip,$line->port);
@@ -187,54 +193,48 @@ try
 		elseif ($nopeerid == 1)
 		{
 			$peers = array();
+			$peers6 = array();
 			while ($line = $result->fetch_object())
 			{
-				#if (!is_null($ipv6))
-				#{
-					#if (!is_null$line->ipv6))
-					#{
-						#$peers[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port);
-					#}
-				#}
-				#else
-				#{
-					$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port);
-				#}
+				if (!is_null($ipv6))
+				{
+					if (!is_null($line->ipv6))
+					{
+						$peers6[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port);
+					}
+				}
+				$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port);
 			}
 		}
 		else
 		{
 			$peers = array();
+			$peers6 = array();
 			while ($line = $result->fetch_object())
 			{
-				#if (!is_null($ipv6))
-				#{
-					#if (!is_null$line->ipv6))
-					#{
-						#$peers[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
-					#}
-				#}
-				#else
-				#{
-					$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
-				#}
+				if (!is_null($ipv6))
+				{
+					if (!is_null($line->ipv6))
+					{
+						$peers6[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
+					}
+				}
+				$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
 			}
 		}
 		$db->query("optimize table announce");
 		$db->query("optimize table history");
 		$db->close();
-		#if (!is_null($ipv6))
-		#{
-			#$announce6 = new bencode();
-			#$announce6 = $announce->set_data(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers6'=>$peers));
-			#die($announce6);
-		#}
-		#else
-		#{
-			$announce = new bencode();
+		$announce = new bencode();
+		if ($iptype == 6 || !is_null($ipv6))
+		{
+			$announce = $announce->set_data(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers,'peers6'=>$peers6));
+		}
+		elseif ($iptype == 4 || is_null($ipv6))
+		{
 			$announce = $announce->set_data(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers));
-			die($announce);
-		#}
+		}
+		die($announce);
 	}
 }
 catch(Exception $e)
