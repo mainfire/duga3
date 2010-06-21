@@ -3,47 +3,29 @@ perhaps a sync method using the new history table (could use the below implement
 i have a compact scrape method in mind, it works just like a compact announce, but whether or not this would make any use by adding it in isnt for me to 
 decide, thats for the people who write clients to decide if they want to support it or not. heres the idea that i've done a rough implenetation of:
 
-	- update: the below was just a quick idea, i am working on a more "static" way in principal with a pointer length of a compact announce using 6 bytes
-	  per peer - i dont recommend reusing this anymore
-
 	- as per some compliance with the original compact announce, which would pack the peer IP address (unsigned long, big endian), followed by the peer
-	  port (unsigned short, big endian), the scrape method would pack the sha1 infohash (hex string, high nibble), followed by complete, incomplete, and
-	  downloaded values (all unsigned short, big endian). so far this seems to cut the scrape size down to about 1/2 / 1/3 of what it is in bencoded
-	  format.
+	  port (unsigned short, big endian), the scrape method would pack the complete, incomplete, and downloaded values (all unsigned short, big endian). 
+	  the scrape array is essentially the same as it was before in becoded format, except the swarm data.
+	  
+	  A quick way would look like this in PHP
+	  
+	  $data = pack('n3',$mysql->complete,$mysql->incomplete,$mysql->downloads);
 
-	- unpacking is hardly any effort, a verbose way would look like this in PHP (be sure to make note of the 40, othwerise you'll only unpack 1 character)
+	- unpacking is hardly any effort, a verbose way would look like this in PHP
 
 	  /*
-	       do something to retrieve the scrape, output is assigned to $output
+	       do something to retrieve the scrape, bdecoded scrape is an array assigned to $swarms
 	  */
-	  $newoutput = unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$output);
-	  $sha1infohash = $newoutput['infohash'];
-	  $complete = $newoutput['complete'];
-	  $incomplete = $newoutput['incomplete'];
-	  $downloaded = $newoutput['downloaded'];
+	  foreach ($swarms as $swarmdata)
+	  {
+	       $unpacked = unpack('ncomplete/nincomplete/ndownloaded',$swarmdata);
+	       $complete = $unpacked['complete'];
+	       $incomplete = $unpacked['incomplete'];
+	       $downloaded = $unpacked['downloaded'];
+	  }
 	  /*
 	       do something with the data here
 	  */
-
-	- a fullscrape method would require you to the same as above, but you will need to break up each chunk which is seperated by "{|}" (no quotations).
-	  the reasoning for the "{|}" is the compact method used can generate a lot of random characters that could possibly end up next to each other, so
-	  we'll see how long it takes to break this format (naturally, of course)
-
-	  /*
-	       do something to retrieve the scrape, output is assigned to $output
-	  */
-	  $array = explode('{|}',$output);
-	  foreach ($array as $infohash)
-	  {
-		   $newoutput = unpack('H40infohash/ncomplete/nincomplete/ndownloaded',$infohash);
-		   $sha1infohash = $newoutput['infohash'];
-		   $complete = $newoutput['complete'];
-		   $incomplete = $newoutput['incomplete'];
-		   $downloaded = $newoutput['downloaded'];
-		   /*
-		        do something with the data here
-		   */
-	  }
 
 	- and to clarify, this would be requested in the exact same manner as a compact announce; just make sure the scrape url looks like this in the end:
 	  1: /scrape?info_hash=___&info_hash=___&compact=1
@@ -52,6 +34,6 @@ decide, thats for the people who write clients to decide if they want to support
 
 	- i don't make any claims over this idea, i'm sure someone else has already came up with this by now, so do whatever with it
  
-ipv6 is implemented in such a way to implement what is documented on the below url, but it is commented out due to being unsupported by any clients
+ipv6 is implemented in such a way to implement what is documented on the below url
 
 	- http://www.bittorrent.org/beps/bep_0007.html#rationale
