@@ -57,6 +57,7 @@ try
 						print "<p>scraped and updated <strong>$infohash</strong> (seeders: $seeds; leechers: $leechs; downloaded: $snags)...</p>";
 					}
 				}
+				unset($torrent); #this will unset each torrent as we update its information, reducing the size of the array (and perhaps some associated overhead)
 			}
 		}
 		if (file_exists($tempscrape))
