@@ -13,6 +13,7 @@ $left = (isset($_GET['left'])) ? rtrim(addslashes(strip_tags($_GET['left']))) : 
 $numwant = (isset($_GET['numwant'])) ? rtrim(addslashes(strip_tags($_GET['numwant']))) : ANNOUNCE_RETURN;
 $peerid = (isset($_GET['peer_id'])) ? rtrim(addslashes(strip_tags($_GET['peer_id']))) : null;
 $port = (isset($_GET['port'])) ? rtrim(addslashes(strip_tags($_GET['port']))) : null;
+$port6 = $port;
 $uploaded = (isset($_GET['uploaded'])) ? rtrim(addslashes(strip_tags($_GET['uploaded']))) : null;
 $timestamp = time();
 header("Content-Type: text/plain");
@@ -30,7 +31,24 @@ try
 	}
 	elseif ($requestip[1] == 6)
 	{
-		$realip = $ipv4;
+		#we need to make sure that both the ip and port columns in mysql contain only ipv4 values, ipv6 and port6 are for ipv6 related things
+		if (!is_null($ipv4))
+		{
+			$explodeipv4 = explode(':',$ipv4);
+			if (!is_null($explodeipv4[1]))
+			{
+				$realip = $explodeipv4[0];
+				$port = $explodeipv4[1];
+			}
+			else
+			{
+				$realip = $explodeipv4[0];
+			}
+		}
+		else
+		{
+			$realip = $explodeipv4[0];
+		}
 		$iptype = 6;
 	}
 	if (is_null($event) && $left > 0)
@@ -105,7 +123,7 @@ try
 				}
 			}
 		}
-		$update = $db->query("update announce set downloaded = '$downloaded', event = '$event', expire = '$expire', port = '$port', remain = '$left', timestamp = '$timestamp', uploaded = '$uploaded' where hash = '$sha1infohash' and ip = '$realip' limit 1");
+		$update = $db->query("update announce set downloaded = '$downloaded', event = '$event', expire = '$expire', port = '$port', port6 = '$port6', remain = '$left', timestamp = '$timestamp', uploaded = '$uploaded' where hash = '$sha1infohash' and ip = '$realip' limit 1");
 		if (!$update)
 		{
 			errorexit('could not update the database!');
@@ -113,7 +131,7 @@ try
 	}
 	else
 	{
-		$insert = $db->query("insert into announce (downloaded,event,expire,hash,ip,ipv6,remain,peerid,uploaded,timestamp) values ($downloaded,'$event',$expire,'$sha1infohash','$realip','$ipv6',$left,'$peerid',$uploaded,$timestamp)");
+		$insert = $db->query("insert into announce (downloaded,event,expire,hash,ip,ipv6,peerid,port,port6,remain,uploaded,timestamp) values ($downloaded,'$event',$expire,'$sha1infohash','$realip','$ipv6','$peerid',$port,$port6,$left,$uploaded,$timestamp)");
 		if (!$insert)
 		{
 			errorexit('could not insert into database!');
@@ -233,7 +251,7 @@ try
 				{
 					if (!is_null($line->ipv6))
 					{
-						$peers6[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port);
+						$peers6[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port6);
 					}
 				}
 				$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port);
@@ -249,7 +267,7 @@ try
 				{
 					if (!is_null($line->ipv6))
 					{
-						$peers6[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
+						$peers6[] = array('ip'=>$line->ipv6,'port'=>(int)$line->port6,'peer id'=>stripslashes($line->peerid));
 					}
 				}
 				$peers[] = array('ip'=>$line->ip,'port'=>(int)$line->port,'peer id'=>stripslashes($line->peerid));
