@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `announce`
 	`ip` char(16) NOT NULL,
 	`ipv6` char(40) NOT NULL,
 	`port` int(5) NOT NULL,
+	`port6` int(5) NOT NULL,
 	`peerid` char(40) binary NOT NULL,
 	`event` char(15) NOT NULL,
 	`uploaded` bigint(20) unsigned NOT NULL default '0',
@@ -56,14 +57,14 @@ function announce_list($hash,$type)
 	{
 		if (in_array($hash,$infohashes))
 		{
-			errorexit("invalid / blacklisted torrent");
+			errorexit("invalid torrent: blacklisted from tracker");
 		}
 	}
 	elseif ($type == 2)
 	{
 		if (!in_array($hash,$infohashes))
 		{
-			errorexit("invalid / non-whitelisted torrent");
+			errorexit("invalid torrent: not whitelisted on tracker");
 		}
 	}
 }
@@ -93,15 +94,30 @@ function hex2bin($str)
 #validate our ip address
 function ipcheck($ip,$type)
 {
+	#this is far from completed, we NEED to do some sort of endpoint check at least once. the problem with this statement is that theres about a million ways you could do this:
+	# - do we return a special flag in the announce that asks the peer to send a request (on the opposite procotol from this request) with a special event specified to verify the endpoint?
+	# - do we add a flag to the database that says "this is a valid checked ipv6 endpoint" after we check the peer on their initial announce? (note: this could lead to numerous potential DDoS vulnerabilities)
+	# - do we do nothing (like now) and just assume the client is a valid endpoint and has all NAT and firewall settings configured the right way
 	if ($type == 4)
 	{
-		if (!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))
+		$explode = explode(':',$ip); #we only want the ip to check against
+		if (count($explode) > 1)
+		{
+			$ipv4 = $explode[0];
+			$port = $explode[1];
+		}
+		else
+		{
+			$ipv4 = $explode[0];
+			$port = null;
+		}
+		if (!filter_var($ipv4,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))
 		{
 			errorexit("invalid request (bad ip)");
 		}
 		else
 		{
-			return $ip;
+			return $ipv4.':'.$port;
 		}
 	}
 	elseif ($type == 6)
