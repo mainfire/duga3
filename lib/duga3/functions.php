@@ -450,8 +450,10 @@ function queue_array_save($file,$array,$mode)
 		{
 			$difference = array_diff($initial,$array);
 			$newarray = array_merge($difference,$array);
-			srand((float)microtime()*10000); #seed the below shuffle
-			shuffle_with_keys($newarray);
+			if (SHUFFLEQUEUED == 1)
+			{
+				shuffle_with_keys($newarray);
+			}
 		}
 		elseif ($mode == 2)
 		{
@@ -475,6 +477,7 @@ function shuffle_with_keys(&$array)
 {
 	$aux = array();
 	$keys = array_keys($array);
+	srand((float)microtime()*10000); #seed the below shuffle
 	shuffle($keys);
 	foreach($keys as $key)
 	{
