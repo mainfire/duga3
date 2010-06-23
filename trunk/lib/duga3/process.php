@@ -192,20 +192,22 @@ try #batter up
 								{
 									foreach ($tracker_tier as $tracker_announce)
 									{
-										$announcecheck2 = $db->query("select * from trackers where announce = '$tracker_announce' limit 1");
-										#$announcecheck2 = $db->query("select * from trackers where match (announce) against ('$tracker_announce') limit 1");
-										if ($announcecheck2->num_rows > 0)
+										if (preg_match('/announce/i',$tracker_announce))
 										{
-											while ($line2 = $announcecheck2->fetch_object())
+											$announcecheck2 = $db->query("select * from trackers where match (announce) against ('\"$tracker_announce\"' IN BOOLEAN MODE) limit 1");
+											if ($announcecheck2->num_rows > 0)
 											{
-												$oldprocessed2 = stripslashes(bzdecompress($line2->processed,true));
-												$newprocessed2 = addslashes(bzcompress($oldprocessed2.';'.$torrentid,BZIP2COMPRESSION,BZIP2WORKFACTOR));
+												while ($line2 = $announcecheck2->fetch_object())
+												{
+													$oldprocessed2 = stripslashes(bzdecompress($line2->processed,true));
+													$newprocessed2 = addslashes(bzcompress($oldprocessed2.';'.$torrentid,BZIP2COMPRESSION,BZIP2WORKFACTOR));
+												}
+												$db->query("update trackers set processed = '$newprocessed2', torrents = torrents + 1, timestamp = '$timestamp' where announce = '$tracker_announce' limit 1");
 											}
-											$db->query("update trackers set processed = '$newprocessed2', torrents = torrents + 1, timestamp = '$timestamp' where announce = '$tracker_announce' limit 1");
-										}
-										else
-										{
-											$db->query("insert into trackers (announce,timestamp,processed) values ('$tracker_announce','$timestamp','".addslashes(bzcompress($torrentid,BZIP2COMPRESSION,BZIP2WORKFACTOR))."')");
+											else
+											{
+												$db->query("insert into trackers (announce,timestamp,processed) values ('$tracker_announce','$timestamp','".addslashes(bzcompress($torrentid,BZIP2COMPRESSION,BZIP2WORKFACTOR))."')");
+											}
 										}
 									}
 								}
