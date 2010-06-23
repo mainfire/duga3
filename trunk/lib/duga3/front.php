@@ -124,7 +124,7 @@ try #batter up
 	else
 	{
 		$db = new mysqli(MYSQLSERVER,MYSQLNAME,MYSQLPASSWORD,MYSQLBASE); #open a new connection to the database
-		if ($db->query("select * from processed") === false || $db->query("select * from trackers") === false) #if we havent installed yet
+		if (!$db->query("select id from processed limit 1") || !$db->query("select id from trackers limit 1")) #if we havent installed yet
 		{
 			if ($db->query($processed) === true && $db->query($trackers) === true) #then install it
 			{
