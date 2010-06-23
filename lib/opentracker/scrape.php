@@ -12,7 +12,7 @@ if (FULLSCRAPE == 2)
 try
 {
 	$db = new mysqli(MYSQLSERVER,MYSQLNAME,MYSQLPASSWORD,MYSQLBASE);
-	if (!$db->query("select * from announce") || !$db->query("select * from history"))
+	if (!$db->query("select id from announce limit 1") || !$db->query("select id from history limit 1"))
 	{
 		$db->query($announce);
 		$db->query($history);
