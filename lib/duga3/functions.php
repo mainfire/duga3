@@ -101,8 +101,7 @@ function check_permissions($directory)
 #this will fetch a given url and write the reponse to a given file
 function curl_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 {
-	$fetch_start = time();
-	$fetch_start_close = $fetch_start + CURLTIMEOUT;
+	$fetch_start_close = time() + CURLTIMEOUT;
 	do
 	{
 		if ($proxyrequest > 0)
@@ -147,7 +146,7 @@ function curl_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 			$curlerrorcode = curl_getinfo($curlhandle,CURLINFO_HTTP_CODE);
 		}
 		curl_close($curlhandle);
-		if ($fetch_start == $fetch_start_close || $fetch_start > $fetch_start_close)
+		if (time() == $fetch_start_close || time() > $fetch_start_close)
 		{
 			break;
 		}
@@ -167,7 +166,7 @@ function curl_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 			}
 		}
 	}
-	while (false);
+	while (0);
 }
 
 #this will post a given array to a given url and write the response to a given file
@@ -334,8 +333,7 @@ function nextstring($num)
 #this will fetch a given url and write the reponse to a given file
 function pecl_http_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 {
-	$fetch_start = time();
-	$fetch_start_close = $fetch_start + CURLTIMEOUT;
+	$fetch_start_close = time() + CURLTIMEOUT;
 	do
 	{
 		if ($proxyrequest > 0)
@@ -381,7 +379,7 @@ function pecl_http_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 		{
 			$requesterrorcode = $request->getResponseCode();
 		}
-		if ($fetch_start == $fetch_start_close || $fetch_start > $fetch_start_close)
+		if (time() == $fetch_start_close || time() > $fetch_start_close)
 		{
 			break;
 		}
@@ -393,7 +391,7 @@ function pecl_http_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 			}
 		}
 	}
-	while (false);
+	while (0);
 }
 
 #TODO
