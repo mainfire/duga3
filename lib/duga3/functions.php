@@ -86,7 +86,7 @@ function base32_encode($string)
 	return strtoupper($output);
 }
 
-#check to see if our folders are chmodded properly (found on PHP.net)
+#check to see if our folders are chmodded properly
 function check_permissions($directory)
 {
 	if (strtoupper(substr(PHP_OS,0,3)) != 'WIN')
@@ -254,7 +254,7 @@ function format_bytes($bytes)
     return round($bytes, $precision).' '.$units[$pow];
 }
 
-#sometimes we need to convert our sha1 version of an infohash back into its binary format, so we use this function (found on php.net)
+#sometimes we need to convert our sha1 version of an infohash back into its binary format, so we use this function
 function hex2bin($str)
 {
 	$bin = "";
@@ -273,6 +273,62 @@ function magnet_link($string,$tracker)
 {
 	$infohash = base32_encode(pack("H*",$string));
 	return "magnet:?xt=urn:btih:$infohash&tr=$tracker";
+}
+
+#assigns a string to a number, and uses mt_rand to decide on a string to use
+function nextstring($num)
+{
+	switch($num)
+	{
+		case "1":
+			return "A";
+		break;
+		case "2":
+			return "B";
+		break;
+		case "3":
+			return "C";
+		break;
+		case "4":
+			return "D";
+		break;
+		case "5":
+			return "E";
+		break;
+		case "6":
+			return "F";
+		break;
+		case "7":
+			return "0";
+		break;
+		case "8":
+			return "1";
+		break;
+		case "9":
+			return "2";
+		break;
+		case "10":
+			return "3";
+		break;
+		case "11":
+			return "4";
+		break;
+		case "12":
+			return "5";
+		break;
+		case "13":
+			return "6";
+		break;
+		case "14":
+			return "7";
+		break;
+		case "15":
+			return "8";
+		break;
+		case "16":
+			return "9";
+		break;
+	}
 }
 
 #this will fetch a given url and write the reponse to a given file
@@ -394,6 +450,8 @@ function queue_array_save($file,$array,$mode)
 		{
 			$difference = array_diff($initial,$array);
 			$newarray = array_merge($difference,$array);
+			srand((float)microtime()*10000); #seed the below shuffle
+			shuffle_with_keys($newarray);
 		}
 		elseif ($mode == 2)
 		{
@@ -411,6 +469,19 @@ function queue_array_save($file,$array,$mode)
 	{
 		return $size;
 	}
+}
+
+function shuffle_with_keys(&$array)
+{
+	$aux = array();
+	$keys = array_keys($array);
+	shuffle($keys);
+	foreach($keys as $key)
+	{
+		$aux[$key] = $array[$key];
+		unset($array[$key]);
+	}
+	$array = $aux;
 }
 
 #recursively delete directories
