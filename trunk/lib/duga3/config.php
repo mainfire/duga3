@@ -51,6 +51,8 @@ define('QUEUEMAX','1000'); #max entires to queue
 define('UPDATEMIN','1000'); #minimum amount of torrents a tracker needs to qualify for a fullscrape
 define('UPDATEMAX','50'); #max entries to update (single scrapes, not fullscrapes)
 
+define('SHUFFLEQUEUED','1'); #shuffle the queued array so we dont ask for so many torrents at once from a single site
+
 define('CURLMETHOD','1'); #1 for default barebones cURL (faster, more reliable, less extendable), 2 fir the pecl http of cURL (slower, less reliable, no built in write function, more extendable)
 define('COPYTORRENT','0'); #make a copy of the torrent within the FOLDER directory (ie: example.com/tor/83/E1/83E1246H...torrent). NOTE: you need this enabled to cache torrents
 #Windows users: for the below function to work right, you must not be on any versions of Windows below Vista
