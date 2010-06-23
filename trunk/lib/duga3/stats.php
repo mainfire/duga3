@@ -154,7 +154,7 @@ try
 				}
 				if (count($queued) > 0)
 				{
-					print "<p>last 20 processed / updated trackers:</p>";
+					print "<p>last 20 queued torrents:</p>";
 					print "<ul>";
 					$loopbreak = 1;
 					foreach ($queued as $url => $plugin)
