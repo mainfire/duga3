@@ -394,7 +394,7 @@ function pecl_http_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 	while (0);
 }
 
-#TODO
+#this function will check if a given url is already an entry in the queued array
 function queue_check($file,$string)
 {
 	if (!file_exists($file) || filesize($file) == 0)
@@ -422,7 +422,11 @@ function queue_check($file,$string)
 	}
 }
 
-#TODO
+#this function is split into two different uses:
+# - the first is when we queue up a site for the first time
+# --- we will check against existing entries in the array (if any) and only add new entries if they dont already exist
+# --- randomize the array or leave in an ordered fashion, specifically: site urls / another sites urls / yet anothers urls / etc
+# - the second is when we need to remove and entry from the array since we have processed it, and thus is no longer needed in queue
 function queue_array_save($file,$array,$mode)
 {
 	if (!file_exists($file) || filesize($file) == 0)
@@ -471,20 +475,6 @@ function queue_array_save($file,$array,$mode)
 	}
 }
 
-function shuffle_with_keys(&$array)
-{
-	$aux = array();
-	$keys = array_keys($array);
-	srand((float)microtime()*10000); #seed the below shuffle
-	shuffle($keys);
-	foreach($keys as $key)
-	{
-		$aux[$key] = $array[$key];
-		unset($array[$key]);
-	}
-	$array = $aux;
-}
-
 #recursively delete directories
 function recursive_rmdir($dir)
 {
@@ -512,6 +502,22 @@ function RFC3986url($string)
 	$entities = array('%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D');
 	$replacements = array('!', '*', "'", "(", ")", ";", ":", "@", "&", "=", "+", "$", ",", "/", "?", "%", "#", "[", "]");
 	return str_replace($entities, $replacements, urlencode($string));
+}
+
+#randomize the entire queued array, this adds to the "politeness" of the crawler when crawler numerous sites
+#you should leave this enabled in config.php to lessen some of the load created by the crawler on sites; instead of crawling one site after the other, we crawl them all at the same time
+function shuffle_with_keys(&$array)
+{
+	$aux = array();
+	$keys = array_keys($array);
+	srand((float)microtime()*10000); #seed the below shuffle
+	shuffle($keys);
+	foreach($keys as $key)
+	{
+		$aux[$key] = $array[$key];
+		unset($array[$key]);
+	}
+	$array = $aux;
 }
 
 #for sanity, I made the script able to do directories somewhat based on the torrents infohash, to lessen the sheer amount of torrents residing in a single directory
