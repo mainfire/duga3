@@ -11,7 +11,7 @@ class bencode
 		}
 		if(($data = @file_get_contents($filename)) === false)
 		{
-			trigger_error("Could not create BEncodeReader for {$filename}: failed to read file", E_USER_WARNING);
+			trigger_error("Could not create bencode class for {$filename}: failed to read file", E_USER_WARNING);
 			return;
 		}
 		$this->set_data(unserialize($data));
