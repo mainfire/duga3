@@ -1,5 +1,5 @@
 <?php
-#this page has been largely rewritten from where it was before, i'll document it _at_some_point_
+#this page has been largely rewritten from where it was before, i'll document it at _some_point_
 $time_start = microtime(true);
 require_once("functions.php");
 check_permissions(LIBROOT.'/'.CACHEFOLDER); #check folder permissions
