@@ -12,7 +12,7 @@ class bdecode
 		}
 		if(($data = @file_get_contents($filename)) === false)
 		{
-			trigger_error("Could not create bdecode for {$filename}: failed to read file", E_USER_WARNING);
+			trigger_error("Could not create bdecode class for {$filename}: failed to read file", E_USER_WARNING);
 			return;
 		}
 		$this->set_data($data);
