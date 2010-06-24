@@ -11,6 +11,7 @@ try
 {
 	$db = new mysqli(MYSQLSERVER,MYSQLNAME,MYSQLPASSWORD,MYSQLBASE);
 	$serialize = LIBROOT."/".CACHEFOLDER."/db.queue";
+	$queued2 = array();
 	if (!file_exists($serialize) || filesize($serialize) == 0)
 	{
 		$queued = array();
@@ -21,10 +22,20 @@ try
 	}
 	if (SITECRAWL != "none") #if our plugin is not "none"
 	{
+		if (count($queued) > 0)
+		{
+			foreach ($queued as $pluginurl => $pluginsite)
+			{
+				if ($pluginsite != SITECRAWL)
+				{
+					$queued2[$pluginurl] = $pluginsite;
+				}
+			}
+			$queued = array_diff($queued,$queued2);
+		}
 		$query = "select count(id) as torrents, sum(leechs) as uno, sum(seeds) as dos, sum(snags) as tres from processed where match (site) against ('".SITECRAWL."')";
 		$query2 = "select * from processed where cached = '1' and site = '".SITECRAWL."'";
 		$query3 = "select * from processed where site = '".SITECRAWL."' order by timestamp asc limit 20";
-
 	}
 	else
 	{
