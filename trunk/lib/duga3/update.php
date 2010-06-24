@@ -81,7 +81,7 @@ try #batter up
 			}
 			if (!file_exists($tempscrape) || filesize($tempscrape) == 0) #if the tracker responds with unusable content (used by multitracker scraping as well)
 			{
-				if ($attempts == MAXSCRAPEATTEMPTS || $attempts > MAXSCRAPEATTEMPTS)
+				if ($attempts >= MAXSCRAPEATTEMPTS)
 				{
 					foreach ($announce_list as $tracker_tier) #before we delete this torrent, lets completely unset it from any arrays in the trackers table
 					{
