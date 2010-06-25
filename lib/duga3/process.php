@@ -92,7 +92,6 @@ try #batter up
 						{
 							$announce = ANNOUNCE_RESET;
 						}
-						#$announce = str_replace("udp://","http://",$announce);
 						$announce_list = (isset($torrent['announce-list'])) ? $torrent['announce-list'] : array_unshift($announce_array_reset,$announce); #get the announce-list, or fallback
 						for ($i = 0; $i < sizeof($announce_list); ++$i)
 						{
@@ -192,7 +191,7 @@ try #batter up
 								{
 									foreach ($tracker_tier as $tracker_announce)
 									{
-										if (preg_match('/announce/i',$tracker_announce))
+										if (!preg_match('/dht:\/\//i',$tracker_announce) || preg_match('/announce/i',$tracker_announce))
 										{
 											$announcecheck2 = $db->query("select * from trackers where match (announce) against ('\"$tracker_announce\"' IN BOOLEAN MODE) limit 1");
 											if ($announcecheck2->num_rows > 0)
