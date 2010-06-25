@@ -147,7 +147,7 @@ try
 				case 'completed':
 					if ($left == 0)
 					{
-						$update1 = $db->query("update history set complete = complete + 1, downloaded = downloaded + 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
+						$update1 = $db->query("update history set complete = complete + 1, downloaded = downloaded + 1, incomplete = incomplete - 1, expire = $expire where match (hash) against ('\"$sha1infohash\"' IN BOOLEAN MODE) limit 1");
 					}
 				break;
 				case 'started':
