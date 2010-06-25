@@ -118,6 +118,8 @@ function curl_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 		{
 			$get_options = array
 			(
+				CURLOPT_MAXREDIRS => MAXREDIRECTS,
+				CURLOPT_TIMEOUT => CURLTIMEOUT,
 				CURLOPT_CONNECTTIMEOUT => CURLWAITTIMEOUT,
 				CURLOPT_ENCODING => "",
 				CURLOPT_FILE => $writefile,
@@ -130,6 +132,8 @@ function curl_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 		{
 			$get_options = array
 			(
+				CURLOPT_MAXREDIRS => MAXREDIRECTS,
+				CURLOPT_TIMEOUT => CURLTIMEOUT,
 				CURLOPT_CONNECTTIMEOUT => CURLWAITTIMEOUT,
 				CURLOPT_ENCODING => "",
 				CURLOPT_FILE => $writefile,
@@ -146,7 +150,7 @@ function curl_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 			$curlerrorcode = curl_getinfo($curlhandle,CURLINFO_HTTP_CODE);
 		}
 		curl_close($curlhandle);
-		if (time() == $fetch_start_close || time() > $fetch_start_close)
+		if (time() >= $fetch_start_close)
 		{
 			break;
 		}
@@ -178,16 +182,20 @@ function curl_post($url,$file,$array)
 		usleep(round(rand(0,100)*1000));
 	}
 	$curlhandle = curl_init($url);
-	curl_setopt($curlhandle,CURLOPT_MAXREDIRS,MAXREDIRECTS);
-	curl_setopt($curlhandle,CURLOPT_FOLLOWLOCATION,1);
-	curl_setopt($curlhandle,CURLOPT_RETURNTRANSFER,1);
-	curl_setopt($curlhandle,CURLOPT_POST,1);
-	curl_setopt($curlhandle,CURLOPT_POSTFIELDS,$array);
-	curl_setopt($curlhandle,CURLOPT_USERAGENT,'Duga-3');
-	curl_setopt($curlhandle,CURLOPT_TIMEOUT,CURLTIMEOUT);
-	curl_setopt($curlhandle,CURLOPT_CONNECTTIMEOUT,CURLWAITTIMEOUT);
-	curl_setopt($curlhandle,CURLOPT_FILE,$writefile);
-	curl_setopt($curlhandle,CURLOPT_ENCODING,"");
+	$post_options = array
+	(
+		CURLOPT_MAXREDIRS => MAXREDIRECTS,
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_POST => true,
+		CURLOPT_POSTFIELDS => $array,
+		CURLOPT_TIMEOUT => CURLTIMEOUT,
+		CURLOPT_CONNECTTIMEOUT => CURLWAITTIMEOUT,
+		CURLOPT_ENCODING => "",
+		CURLOPT_FILE => $writefile,
+		CURLOPT_USERAGENT => "Duga-3",
+	);
+	curl_setopt_array($curlhandle,$post_options);
 	curl_exec($curlhandle);
 	if (DEBUGGING == 1)
 	{
@@ -379,7 +387,7 @@ function pecl_http_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 		{
 			$requesterrorcode = $request->getResponseCode();
 		}
-		if (time() == $fetch_start_close || time() > $fetch_start_close)
+		if (time() >= $fetch_start_close)
 		{
 			break;
 		}
