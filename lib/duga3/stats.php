@@ -33,13 +33,13 @@ try
 			}
 			$queued = array_diff($queued,$queued2);
 		}
-		$query = "select count(id) as torrents, sum(leechs) as uno, sum(seeds) as dos, sum(snags) as tres from processed where match (site) against ('".SITECRAWL."')";
+		$query = "select count(id) as torrents, sum(leechs) as leechs, sum(seeds) as seeds, sum(snags) as snags from processed where match (site) against ('".SITECRAWL."')";
 		$query2 = "select * from processed where cached = '1' and site = '".SITECRAWL."'";
 		$query3 = "select * from processed where site = '".SITECRAWL."' order by timestamp asc limit 20";
 	}
 	else
 	{
-		$query = "select count(id) as torrents, sum(leechs) as uno, sum(seeds) as dos, sum(snags) as tres from processed";
+		$query = "select count(id) as torrents, sum(leechs) as leechs, sum(seeds) as seeds, sum(snags) as snags from processed";
 		$query2 = "select * from processed where cached = '1'";
 		$query3 = "select * from processed order by timestamp desc limit 20";
 		$query4 = "select * from trackers order by timestamp desc limit 20";
@@ -79,44 +79,16 @@ try
 				{
 					print "<p>totals:</p>";
 				}
-				if ($line->torrents == null)
-				{
-					$torrents = 0;
-				}
-				else
-				{
-					$torrents = $line->torrents;
-				}
-				if ($line->uno == null)
-				{
-					$seeds = 0;
-				}
-				else
-				{
-					$seeds = $line->uno;
-				}
-				if ($line->dos == null)
-				{
-					$leechs = 0;
-				}
-				else
-				{
-					$leechs = $line->dos;
-				}
-				if ($line->tres == null)
-				{
-					$downloads = 0;
-				}
-				else
-				{
-					$downloads = $line->tres;
-				}
+				$torrents = intval($line->torrents,0);
+				$seeds = intval($line->seeds,0);
+				$leechs = intval($line->leechs,0);
+				$snags = intval($line->snags,0);
 				print "<ul>";
 				print "<li>queued: ".count($queued)."</li>";
 				print "<li>torrents: ".$torrents."</li>";
 				print "<li>seeds: ".$seeds."</li>";
 				print "<li>leechs: ".$leechs."</li>";
-				print "<li>downloads: ".$downloads."</li>";
+				print "<li>downloads: ".$snags."</li>";
 				if (COPYTORRENT == 1)
 				{
 					print "<li>cached: ".$num_rows2."</li>";
