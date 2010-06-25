@@ -24,7 +24,14 @@ try
 		$torrageurl = TORRAGE."/autoupload.php";
 		$cacheprefix = time();
 		$torragecheck = LIBROOT.'/'.CACHEFOLDER.'/'.$cacheprefix.'.check';
-		curl_fetch($torrageurl,$torragecheck,0);
+		if (extension_loaded('http') && CURLMETHOD == 2)
+		{
+			pecl_http_fetch($torrageurl,$torragecheck,0);
+		}
+		else
+		{
+			curl_fetch($torrageurl,$torragecheck,0);
+		}
 		if (!file_exists($torragecheck) || filesize($torragecheck) == 0)
 		{
 			print "<p><strong>".TORRAGE."</strong> could not be reached (bad hostname / domain, site offline, etc). <a href=index.php>finish</a>...</p>";
@@ -55,7 +62,14 @@ try
 						$postdata["name"] = "torrent";
 						$postdata["torrent"] = "@".$torrentlocation;
 						$temphash = LIBROOT.'/'.CACHEFOLDER.'/'.$cacheprefix.'.cache'; #cached response
-						curl_post($torrageurl,$temphash,$postdata);
+						if (extension_loaded('http') && CURLMETHOD == 2)
+						{
+							pecl_http_post($torrageurl,$temphash,$postdata);
+						}
+						else
+						{
+							curl_post($torrageurl,$temphash,$postdata);
+						}
 						if (!file_exists($temphash) || filesize($temphash) == 0)
 						{
 							if ($db->query('delete from processed where id = '.$line->id.' limit 1') === true) #delete it from the database
