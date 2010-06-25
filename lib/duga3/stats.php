@@ -119,7 +119,7 @@ try
 				print "<li>downloads: ".$downloads."</li>";
 				if (COPYTORRENT == 1)
 				{
-					print "<li>cached: ".$num_rows3."</li>";
+					print "<li>cached: ".$num_rows2."</li>";
 				}
 				print "</ul>";
 				if ($num_rows3 > 0)
