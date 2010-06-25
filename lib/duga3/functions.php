@@ -176,38 +176,43 @@ function curl_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 #this will post a given array to a given url and write the response to a given file
 function curl_post($url,$file,$array)
 {
-	$writefile = fopen($file,"w");
-	while (!flock($writefile,LOCK_EX))
+	$fetch_start_close = time() + CURLTIMEOUT;
+	do
 	{
-		usleep(round(rand(0,100)*1000));
+		$writefile = fopen($file,"w");
+		while (!flock($writefile,LOCK_EX))
+		{
+			usleep(round(rand(0,100)*1000));
+		}
+		$curlhandle = curl_init($url);
+		$post_options = array
+		(
+			CURLOPT_MAXREDIRS => MAXREDIRECTS,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_POST => true,
+			CURLOPT_POSTFIELDS => $array,
+			CURLOPT_TIMEOUT => CURLTIMEOUT,
+			CURLOPT_CONNECTTIMEOUT => CURLWAITTIMEOUT,
+			CURLOPT_ENCODING => "",
+			CURLOPT_FILE => $writefile,
+			CURLOPT_USERAGENT => "Duga-3",
+		);
+		curl_setopt_array($curlhandle,$post_options);
+		curl_exec($curlhandle);
+		if (DEBUGGING == 1)
+		{
+			print "<pre>";
+			print print_r(curl_error($curlhandle));
+			print "<br />";
+			print print_r(curl_getinfo($curlhandle));
+			print "</pre>";
+		}
+		flock($writefile,LOCK_UN);
+		fclose($writefile);
+		curl_close($curlhandle);
 	}
-	$curlhandle = curl_init($url);
-	$post_options = array
-	(
-		CURLOPT_MAXREDIRS => MAXREDIRECTS,
-		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_FOLLOWLOCATION => true,
-		CURLOPT_POST => true,
-		CURLOPT_POSTFIELDS => $array,
-		CURLOPT_TIMEOUT => CURLTIMEOUT,
-		CURLOPT_CONNECTTIMEOUT => CURLWAITTIMEOUT,
-		CURLOPT_ENCODING => "",
-		CURLOPT_FILE => $writefile,
-		CURLOPT_USERAGENT => "Duga-3",
-	);
-	curl_setopt_array($curlhandle,$post_options);
-	curl_exec($curlhandle);
-	if (DEBUGGING == 1)
-	{
-		print "<pre>";
-		print print_r(curl_error($curlhandle));
-		print "<br />";
-		print print_r(curl_getinfo($curlhandle));
-		print "</pre>";
-	}
-	flock($writefile,LOCK_UN);
-	fclose($writefile);
-	curl_close($curlhandle);
+	while (0);
 }
 
 #decode and return certain values from a single scrape
@@ -352,8 +357,10 @@ function pecl_http_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 		{
 			$get_options = array
 			(
-				compress => 1,
+				redirect => MAXREDIRECTS,
 				connecttimeout => CURLWAITTIMEOUT,
+				timeout => CURLTIMEOUT,
+				compress => 1,
 				referer => $plugins[$referrer]['PLUGINURL'],
 				useragent => "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3",
 			);
@@ -362,8 +369,10 @@ function pecl_http_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 		{
 			$get_options = array
 			(
-				compress => 1,
+				redirect => MAXREDIRECTS,
 				connecttimeout => CURLWAITTIMEOUT,
+				timeout => CURLTIMEOUT,
+				compress => 1,
 				useragent => "Duga-3",
 			);
 		}
@@ -397,6 +406,44 @@ function pecl_http_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 			{
 				return $requesterrorcode;
 			}
+		}
+	}
+	while (0);
+}
+
+function pecl_http_post($url,$file,$array)
+{
+	$fetch_start_close = time() + CURLTIMEOUT;
+	do
+	{
+		$post_options = array
+		(
+			redirect => MAXREDIRECTS,
+			connecttimeout => CURLWAITTIMEOUT,
+			timeout => CURLTIMEOUT,
+			compress => 1,
+			useragent => "Duga-3",
+		);
+		$writefile = fopen($file,"w");
+		while (!flock($writefile,LOCK_EX))
+		{
+			usleep(round(rand(0,100)*1000));
+		}
+		$request = new HttpRequest($url,HTTP_METH_GET,$post_options);
+		try
+		{
+			$request->setPostFiles(array($array));
+			$request->send(); #dont remove this from within the try { brackets }, this is to prevent exceptions from killing execution (404's and the like are handled elsewhere)
+		}
+		catch (HttpException $e)
+		{
+		}
+		fwrite($writefile,$request->getResponseBody());
+		flock($writefile,LOCK_UN);
+		fclose($writefile);
+		if (time() >= $fetch_start_close)
+		{
+			break;
 		}
 	}
 	while (0);
