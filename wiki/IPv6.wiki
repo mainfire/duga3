@@ -1,0 +1,6 @@
+#summary Tracker: Future-proof the tracker with IPv6 support now
+#labels Ideas,Phase-Implementation,Phase-Design
+
+= About =
+
+This is sort of undocumented at the moment, more to come.
