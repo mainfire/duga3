@@ -191,6 +191,8 @@ try #batter up
 <?php
 			}
 		}
+		$db->query("optimize table processed");
+		$db->query("optimize table trackers");
 		$db->close(); #close connection to database
 	}
 }
