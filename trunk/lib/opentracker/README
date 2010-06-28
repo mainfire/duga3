@@ -6,14 +6,17 @@ server level method to block users from requesting anything from the lib directo
 
 |-- [ web root (acessible) ]
 |-- scrape.php >----------->-----------
-|-- announce.php >--------->---------  |
-|-- [ lib root (inacessible) ]       | |
-|-- lib/                             v v
-|-- lib/opentracker                  | |
-|-- lib/opentracker/announce.php <---  |
+|-- tracker.php                        |
+|-- announce.php >--------->--------   |
+|-- [ lib root (inacessible) ]      |  |
+|-- lib/                            v  v
+|-- lib/opentracker                 |  |
+|-- lib/opentracker/announce.php <--   |
+|-- lib/opentracker/bencode.php        |
+|-- lib/opentracker/clean.php          |
 |-- lib/opentracker/config.php         |
 |-- lib/opentracker/functions.php      |
-|-- lib/opentracker/scrape.php <--<----
+|-- lib/opentracker/scrape.php <---<---
 
 As you can see, make sure that where ever you do put the client announce.php and scrape.php, that they point toward the right
 location and file (open the file and set the location yourself, its 1 line).
@@ -31,6 +34,9 @@ FBDD02B6A9F266434B412D1EBEC3897F771E8B07
 
 Depending on what list type is set, the tracker will either track only the above hashes, or everything except the above hashes.
 Any other value than "whitelist or "blacklist" will completely disable the list mechanism and the tracker will run 100% open.
+
+Finally, make sure you set lib/opentracker/clean.php to run every 30 minutes or so in cron. Be sure that the IP of the machine
+running this from cron is set in config.php (if you are just running it locally on the same machine, its already set to go).
 
 This is distributed under the new BSD license as a whole, with small (noted) portions reused from the original script. These
 portions are re-released under the public domain, since the original script did not include an actual license.
