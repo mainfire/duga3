@@ -44,4 +44,9 @@ define('SCRAPE_INTERVAL','60'); #value (in minutes) that is added onto the above
 
 define('LISTLOCATION','C:\web\blacklist.txt'); #location of the below list type file, this is 100% compatible with erdgeists opentracker software (example: /usr/home/kipz/blacklist or C:\web\blacklist.txt)
 define('LISTTYPE','blacklist'); #blacklist (allow all torrents except the listed hashes), whitelist (block all torrents except the listed hashes), anything else will disable both
+
+$banned_clients = array #blocks clients based on the first six characters of the specified peer_id
+(
+	#'UT2020', #in example, this would block utorrent 2.0.2
+);
 ?>

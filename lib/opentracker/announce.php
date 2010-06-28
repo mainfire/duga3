@@ -23,6 +23,11 @@ try
 	{
 		errorexit("invalid request");
 	}
+	$client = explode('-',$peerid);
+	if (in_array($client[1],$banned_clients))
+	{
+		errorexit("this client is banned from the tracker");
+	}
 	$sha1infohash = strtoupper(bin2hex($infohash));
 	if ($requestip[1] == 4) #here we need to make sure we only insert ipv4 into the ip row, ipv6 into the ipv6 table
 	{
@@ -86,7 +91,7 @@ try
 	{
 		if ($compact == 0)
 		{
-			errorexit('tracker requires compact announce');
+			errorexit("tracker requires compact announce");
 		}
 	}
 	$db = new mysqli(MYSQLSERVER,MYSQLNAME,MYSQLPASSWORD,MYSQLBASE);
