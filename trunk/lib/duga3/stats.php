@@ -159,6 +159,8 @@ try
 	{
 		print "<p>nothing processed, <a href=index.php>return</a> to queue some up.</p>";
 	}
+	$db->query("optimize table processed");
+	$db->query("optimize table trackers");
 	$db->close();
 }
 catch(Exception $e)

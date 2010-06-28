@@ -164,6 +164,8 @@ try
 			{
 				print "<p>looks like youre <a href=index.php>finished</a>!</p>";
 			}
+			$db->query("optimize table processed");
+			$db->query("optimize table trackers");
 			$db->close();
 		}
 		else

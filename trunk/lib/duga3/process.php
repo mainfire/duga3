@@ -88,13 +88,20 @@ try #batter up
 					{
 						$infohash = $torrent['info_hash']; #get the infohash of the torrent
 						$announce = (isset($torrent['announce'])) ? $torrent['announce'] : ANNOUNCE_RESET; #get the main announce url
-						if (in_array($announce,$announce_blacklist) || strlen($announce) < 15)
+						if (in_array($announce,$announce_blacklist) || strlen($announce) <= 21 || !preg_match('/announce/i',$tracker_announce))
 						{
 							$announce = ANNOUNCE_RESET;
 						}
 						$announce_list = (isset($torrent['announce-list'])) ? $torrent['announce-list'] : array_unshift($announce_array_reset,$announce); #get the announce-list, or fallback
 						for ($i = 0; $i < sizeof($announce_list); ++$i)
 						{
+							for ($ii = 0; $ii < sizeof($announce_list[$i]); ++$ii)
+							{
+								if (is_null($announce_list[$i][$ii]) || strlen($announce_list[$i][$ii]) <= 21 || !preg_match('/announce/i',$announce_list[$i][$ii]))
+								{
+									unset($announce_list[$i][$ii]);
+								}
+							}
 							$announce_list[$i] = array_diff($announce_list[$i],$announce_blacklist); #filter this tiers entire tracker list against our blacklist (fastest way possible without flipping + unset)
 							$announce_list[$i] = array_values(array_filter($announce_list[$i])); #reset this tiers array correctly
 						}
@@ -108,7 +115,7 @@ try #batter up
 						$encoding = (isset($torrent['encoding'])) ? $torrent['encoding'] : 0; #get torrents encoding
 						$modified = (isset($torrent['modified-by'])) ? $torrent['modified-by'] : 0; #whether or not this torrent has already been modified
 						$filesize = 0; #start our filesize at 0
-						array_walk_recursive($torrent,'add_length'); #walk the 'length' bit and add up the size in the end
+						array_walk_recursive($torrent,'add_length'); #walk the 'length' bit and add up the size in the end (returned as the above $filesize variable)
 						$piecelength = $torrent['info']['piece length']; #piece length, in bytes
 						$pieces = strtoupper(bin2hex($torrent['info']['pieces'])); #convert our binary pieces into a hex string
 						$pieces = substr(chunk_split($pieces,20,"-"),0,-1); #break this up into smaller 20 byte
@@ -191,7 +198,7 @@ try #batter up
 								{
 									foreach ($tracker_tier as $tracker_announce)
 									{
-										if (!preg_match('/dht:\/\//i',$tracker_announce) || preg_match('/announce/i',$tracker_announce))
+										if (!preg_match('/dht:\/\//i',$tracker_announce))
 										{
 											$announcecheck2 = $db->query("select * from trackers where match (announce) against ('\"$tracker_announce\"' IN BOOLEAN MODE) limit 1");
 											if ($announcecheck2->num_rows > 0)

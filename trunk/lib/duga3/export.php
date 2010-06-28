@@ -84,6 +84,8 @@ try #batter up
 		fwrite($writexml2, $exportfooter2);
 		fclose($writexml2); #close		
 		print "<p>wrote 2 new xml files in the FEEDSROOT folder, <a href=index.php>finish</a>.</p>"; #done
+		$db->query("optimize table processed");
+		$db->query("optimize table trackers");
 		$db->close(); #close database
 	}
 	else
