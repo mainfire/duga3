@@ -1,0 +1,8 @@
+#summary Perhaps a solution to the often asked "compact scrape" extension to trackers
+#labels Ideas
+
+= About =
+
+This is a _very_ unofficial extension to the tracker "scrape" implementation. It works very much like the already widely supported compact announce.
+
+However, I don't feel like pasting an already complete page describing the idea and then making it wiki compatible at 5 in the morning, so in the meantime: http://kipz.irc.su/duga-3.php?show=ideas
