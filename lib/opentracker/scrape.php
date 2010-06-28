@@ -17,8 +17,6 @@ try
 		$db->query($announce);
 		$db->query($history);
 	}
-	$db->query("delete from announce where expire < $timestamp");
-	$db->query("delete from history where expire < $timestamp");
 	if (is_null($infohash))
 	{
 		if (FULLSCRAPE == 0)

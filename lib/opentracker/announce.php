@@ -100,8 +100,6 @@ try
 		$db->query($announce);
 		$db->query($history);
 	}
-	$db->query("delete from announce where expire < $timestamp");
-	$db->query("delete from history where expire < $timestamp");
 	$ratio = (ANNOUNCE_INTERVAL*60) + (ANNOUNCE_EXPIRE*60);
 	if (!is_null($event) && ($event == 'stopped'))
 	{
