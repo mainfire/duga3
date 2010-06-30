@@ -24,7 +24,18 @@ try
 		throw new Exception("invalid request");
 	}
 	$client = explode('-',$peerid);
-	if (!array_key_exists($client[1],$banned_clients))
+	if (count($banned_clients_wildcards) > 0)
+	{
+		$wildcard_client = preg_replace('/[[:^digit:]]/',"",$client[0]);
+		foreach ($banned_clients_wildcards as $banned_client => $return_client)
+		{
+			if (preg_match("/$wildcard_client/i",$banned_client))
+			{
+				throw new Exception("this client is banned from the tracker (".$return_client.")!");
+			}
+		}
+	}
+	if (!array_key_exists($client[1],$banned_clients_versions))
 	{
 		$sha1infohash = strtoupper(bin2hex($infohash));
 		if ($requestip[1] == 4) #here we need to make sure we only insert ipv4 into the ip row, ipv6 into the ipv6 table
@@ -323,7 +334,7 @@ try
 	}
 	else
 	{
-		throw new Exception("this client is banned from the tracker (".$banned_clients[$client[1]].")");
+		throw new Exception("this client is banned from the tracker (".$banned_clients[$client[1]].")!");
 	}
 }
 catch(Exception $e)
