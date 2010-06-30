@@ -60,8 +60,8 @@ define('SYMLINKTORRENT','0'); #due to the above folders layout, you may want to 
 define('TORRAGE','http://torrage.com'); #the site we want to cache our torrents to, must be a torrage based site (torcache.com is a known alternative)
 
 define('EXECTIMEOUT','595'); #when should we kill the scripts execution if it doesnt respond fast enough
-define('CURLTIMEOUT','5'); #max amount of time it takes for curl begin execution
-define('CURLWAITTIMEOUT','5'); #max number of seconds to wait for initial response connection, leave this low too
+define('CURLTIMEOUT','2'); #max amount of time it takes for curl begin execution
+define('CURLWAITTIMEOUT','3'); #max number of seconds to wait for initial response connection, leave this low too
 define('SLEEPER','0'); #time (in seconds) to wait after processing a url (of any kind)
 
 define('SPOOFREFERRER','0'); #does some spoofing by resetting the referrer to the plugins xml url, and the user-agent to firefox on windows 7
