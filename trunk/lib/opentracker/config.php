@@ -47,8 +47,8 @@ define('LISTTYPE','blacklist'); #blacklist (allow all torrents except the listed
 
 define('CLEAN_IP','127.0.0.1'); #the ip that is allowed to run the swarm cleaner (this should be set to cron locally on the same machine)
 
-$banned_clients = array #blocks clients based on the first six characters of the specified peer_id
+$banned_clients = array #blocks clients based on the first six characters of the specified peer_id ('peerid' => 'human readable client version')
 (
-	#'UT2020', #in example, this would block utorrent 2.0.2
+	#'UT2020' => 'uTorrent 2.0.2', #in example, this would block ONLY utorrent 2.0.2
 );
 ?>
