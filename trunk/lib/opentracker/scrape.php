@@ -21,10 +21,10 @@ try
 	{
 		if (FULLSCRAPE == 0)
 		{
-			errorexit("fullscrapes are disabled on this tracker");
+			throw new Exception("fullscrapes are disabled on this tracker");
 		}
 		$hashes = array();
-		$query = "select hash from history";
+		$query = "select hash from history where expire > $timestamp";
 		if ($result = $db->query($query))
 		{
 			while ($line = $result->fetch_object())
@@ -56,7 +56,7 @@ try
 				}
 				else
 				{
-					errorexit("invalid info_hash(s) specified");
+					throw new Exception("invalid info_hash(s) specified");
 				}
 			}
 		}
@@ -103,7 +103,7 @@ try
 }
 catch(Exception $e)
 {
-	errorexit("tracker is down!");
+	errorexit($e->getMessage());
 }
 if (FULLSCRAPE == 2)
 {

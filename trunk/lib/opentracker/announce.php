@@ -21,7 +21,7 @@ try
 {
 	if (is_null($infohash) || is_null($port) || !is_numeric($port) || is_null($peerid) || is_null($uploaded) || !is_numeric($uploaded) || is_null($downloaded) || !is_numeric($downloaded) || is_null($left) || !is_numeric($left) || (!is_null($event) && ($event != "started") && ($event != "completed") && ($event != "stopped")))
 	{
-		errorexit("invalid request");
+		throw new Exception("invalid request");
 	}
 	$client = explode('-',$peerid);
 	if (!array_key_exists($client[1],$banned_clients))
@@ -82,14 +82,14 @@ try
 		{
 			if ($compact == 0 && $nopeerid == 0)
 			{
-				errorexit("standard announces not allowed! use either no_peer_id or compact!");
+				throw new Exception("standard announces not allowed! use either no_peer_id or compact!");
 			}
 		}
 		elseif (ANNOUNCE_TYPE == 2)
 		{
 			if ($compact == 0)
 			{
-				errorexit("tracker requires compact announce");
+				throw new Exception("tracker requires compact announce");
 			}
 		}
 		$db = new mysqli(MYSQLSERVER,MYSQLNAME,MYSQLPASSWORD,MYSQLBASE);
@@ -119,7 +119,7 @@ try
 						$oldstamp = time() - ($line->timestamp-60);
 						if ($oldstamp <= (ANNOUNCE_INTERVAL*60))
 						{
-							errorexit('enforcing announce interval, ignoring request!');
+							throw new Exception('enforcing announce interval, ignoring request!');
 						}
 					}
 				}
@@ -127,7 +127,7 @@ try
 			$update = $db->query("update announce set downloaded = '$downloaded', event = '$event', expire = '$expire', port = '$port', port6 = '$port6', remain = '$left', timestamp = '$timestamp', uploaded = '$uploaded' where hash = '$sha1infohash' and ip = '$realip' limit 1");
 			if (!$update)
 			{
-				errorexit('could not update the database!');
+				throw new Exception('could not update the database!');
 			}
 		}
 		else
@@ -135,7 +135,7 @@ try
 			$insert = $db->query("insert into announce (downloaded,event,expire,hash,ip,ipv6,peerid,port,port6,remain,uploaded,timestamp) values ($downloaded,'$event',$expire,'$sha1infohash','$realip','$ipv6','$peerid',$port,$port6,$left,$uploaded,$timestamp)");
 			if (!$insert)
 			{
-				errorexit('could not insert into database!');
+				throw new Exception('could not insert into database!');
 			}
 		}
 		$newhash = $db->query("select * from history where hash = '$sha1infohash' limit 1");
@@ -174,7 +174,7 @@ try
 				}
 				if (!$update1)
 				{
-					errorexit('could not update the database!');
+					throw new Exception('could not update the database!');
 				}
 			}
 			else
@@ -210,7 +210,7 @@ try
 				}
 				if (!$insert1)
 				{
-					errorexit('could not insert into database!');
+					throw new Exception('could not insert into database!');
 				}
 			}
 		}
@@ -235,7 +235,7 @@ try
 				}
 				if (!$update1)
 				{
-					errorexit('could not update the database!');
+					throw new Exception('could not update the database!');
 				}
 			}
 			else
@@ -257,7 +257,7 @@ try
 				}
 				if (!$insert1)
 				{
-					errorexit('could not insert into database!');
+					throw new Exception('could not insert into database!');
 				}
 			}
 		}
@@ -323,11 +323,11 @@ try
 	}
 	else
 	{
-		errorexit("this client is banned from the tracker (".$banned_clients[$client[1]].")");
+		throw new Exception("this client is banned from the tracker (".$banned_clients[$client[1]].")");
 	}
 }
 catch(Exception $e)
 {
-	errorexit("tracker is down!");
+	errorexit($e->getMessage());
 }
 ?>
