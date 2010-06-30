@@ -51,4 +51,9 @@ $banned_clients = array #blocks clients based on the first six characters of the
 (
 	#'UT2020' => 'uTorrent 2.0.2', #in example, this would block ONLY utorrent 2.0.2
 );
+
+$banned_clients_wildcards = array #instead of using the above, you could use this to do a wildcard on all versions of a given torrent client ('peerid****' => 'human readable client')
+(
+	#'UT' => 'uTorrent', #in example, this would block all versions of uTorrent from connecting
+); #a quick final note is to not use numbers at all: XBT would block all XBT clients, SB would block all of shad0ws clients, you get the idea.
 ?>
