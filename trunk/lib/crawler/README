@@ -10,10 +10,10 @@ graph thing for a bit on how to set it up right.
 |-- admin/index.php >--------->--------  (the "admin" interface, or crawler)
 |-- [ lib root (inacessible) ]         |
 |-- lib/                               v
-|-- lib/duga3                          |
-|-- lib/duga3/....                     |
-|-- lib/duga3/....                     |
-|-- lib/duga3/request.php <-----<------  (it needs to require_once "some/path/to_lib/duga/request.php";)
+|-- lib/crawler                        |
+|-- lib/crawler/....                   |
+|-- lib/crawler/....                   |
+|-- lib/crawler/request.php <----<-----  (it needs to require_once "some/path/to_lib/crawler/request.php";)
 
 From there, so long as your MySQL information is correct, just log into the admin interface and it will install itself.
 
