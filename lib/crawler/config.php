@@ -42,7 +42,7 @@ define('FOLDER','tor'); #torrent folder (resides in the below WEBROOT folder); e
 define('SYMLINKFOLDER','get'); #symlinks folder (resides in the above FOLDER folder); example: get (SYMLINKTORRENT must be set to 1, see define's note)
 define('CACHEFOLDER','cache'); #cache folder (resides in the below LIBROOT folder); example: cache
 define('WEBROOT','/home/kipz/public_html/'); #bot root; example: /var/www/crawler/bot or C:/www/crawler/bot
-define('LIBROOT','/home/kipz/public_html/lib/duga3'); #folder in lib; example: /var/www/crawler/lib/duga3 or C:/www/crawler/lib/duga3
+define('LIBROOT','/home/kipz/public_html/lib/crawler'); #folder in lib; example: /var/www/crawler/lib/crawler or C:/www/crawler/lib/crawler
 
 define('CACHEMAX','50'); #max entires to send to torrage in one run
 define('EXPORTMAX','100'); #max entires to export
