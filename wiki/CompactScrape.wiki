@@ -84,6 +84,6 @@ Tracker software already needs to be able to handle more than just "a few hundre
 
 == Anything else? ==
 
-This idea is public domain, I don't really see any reason to stake a claim in this - the more software that supports this, the better :)
+This has already been implemented this into the opentracker software, which is available via SVN. The idea is also public domain, I don't really see any reason to stake a claim in this - the more software that supports this, the better :)
 
 Plus, I'm sure someone has came up with this by now. If they haven't, then OMGWTFBBQ
