@@ -1,4 +1,5 @@
 <?php
+#licensed under the new bsd license
 #return each keys length by adding to the filesize (global var located in process.php)
 function add_length($value, $key)
 {
@@ -30,7 +31,8 @@ function ann2scr($str,$str2,$type)
 	}
 }
 
-#updated base32 function, relicensed under the PHP license as noted here (and copyright 2001 the PHP group): http://cvs.moodle.org/moodle/lib/base32.php?revision=1.5
+#updated base32 function
+#licensed under the PHP license as noted here: http://cvs.moodle.org/moodle/lib/base32.php?revision=1.5
 function base32_encode($string)
 {
 	$base32_array = array
@@ -411,6 +413,7 @@ function pecl_http_fetch($url,$file,$referrer,$proxyrequest,$errorcode)
 	while (0);
 }
 
+#post version of curl_post
 function pecl_http_post($url,$file,$array)
 {
 	$fetch_start_close = time() + CURLTIMEOUT;
@@ -531,6 +534,7 @@ function queue_array_save($file,$array,$mode)
 }
 
 #recursively delete directories
+#released under the php license since it was found on php.net
 function recursive_rmdir($dir)
 {
 	$files = glob($dir.'*',GLOB_MARK);
@@ -552,6 +556,7 @@ function recursive_rmdir($dir)
 }
 
 #this _will_ correct any "stupid" urls that torrent sites tend to use (ie: using spaces instead of +)
+#released under the php license since it was found on php.net
 function RFC3986url($string)
 {
 	$entities = array('%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D');

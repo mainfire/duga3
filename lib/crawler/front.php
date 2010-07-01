@@ -1,4 +1,5 @@
 <?php
+#licensed under the new bsd license
 $time_start = microtime(true);
 define('EXECUTE','index');
 require_once("functions.php");

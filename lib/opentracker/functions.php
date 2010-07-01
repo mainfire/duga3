@@ -1,4 +1,5 @@
 <?php
+#licensed under the new bsd license
 require_once 'bencode.php';
 #our announce mysql table, do not modify this!
 $announce = "
@@ -90,6 +91,7 @@ function format_bytes($bytes)
 }
 
 #convert our sha1 infohash back intos binary format
+#licensed under the php license, since this was found on php.net
 function hex2bin($str)
 {
 	$bin = "";

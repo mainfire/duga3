@@ -1,5 +1,6 @@
 <?php
 #i'd like to refer to this file as the switchboard file rather than the request file
+#licensed under the new bsd license
 require_once("config.php");
 ini_set("max_execution_time",EXECTIMEOUT);
 ini_set("memory_limit",MEMORYLIMIT."M");
@@ -82,6 +83,9 @@ else
 					break;
 					case 'update3':
 						require_once 'update3.php';
+					break;
+					case 'upload':
+						require_once 'upload.php';
 					break;
 					default:
 						require_once 'front.php';

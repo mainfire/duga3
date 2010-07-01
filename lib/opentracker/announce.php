@@ -1,4 +1,5 @@
 <?php
+#licensed under the new bsd license
 require_once 'config.php';
 require_once 'functions.php';
 $compact = (isset($_GET['compact'])) ? rtrim(strip_tags($_GET['compact'])) : 0;
