@@ -89,7 +89,7 @@ try #batter up
 					{
 						$infohash = $torrent['info_hash']; #get the infohash of the torrent
 						$announce = (isset($torrent['announce'])) ? $torrent['announce'] : ANNOUNCE_RESET; #get the main announce url
-						if (in_array($announce,$announce_blacklist) || strlen($announce) <= 21 || !preg_match('/announce/i',$tracker_announce))
+						if (in_array($announce,$announce_blacklist) || strlen($announce) <= 21 || !preg_match('/announce/i',$announce) || !filter_var($announce,FILTER_VALIDATE_URL))
 						{
 							$announce = ANNOUNCE_RESET;
 						}
@@ -98,7 +98,7 @@ try #batter up
 						{
 							for ($ii = 0; $ii < sizeof($announce_list[$i]); ++$ii)
 							{
-								if (is_null($announce_list[$i][$ii]) || strlen($announce_list[$i][$ii]) <= 21 || !preg_match('/announce/i',$announce_list[$i][$ii]))
+								if (is_null($announce_list[$i][$ii]) || strlen($announce_list[$i][$ii]) <= 21 || !preg_match('/announce/i',$announce_list[$i][$ii]) || !filter_var($announce_list[$i][$ii],FILTER_VALIDATE_URL))
 								{
 									unset($announce_list[$i][$ii]);
 								}
