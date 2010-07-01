@@ -94,13 +94,28 @@ try
 	$scrape = new bencode();
 	if (COMPACT_SCRAPE != 1)
 	{
-		$scrape = $scrape->set_data(array('files'=>$files,'flags'=>array('min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60))));
+		$scrapedata = array
+		(
+			'files' => $files,
+			'flags'=> array
+			(
+				'min_request_interval' => (int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)
+			)
+		);
 	}
 	else
 	{
-		$scrape = $scrape->set_data(array('files'=>$files,'flags'=>array('compact_scrape'=>(int)1,'min_request_interval'=>(int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60))));
+		$scrapedata = array
+		(
+			'files' => $files,
+			'flags' => array
+			(
+				'compact_scrape' => (int)1,
+				'min_request_interval' => (int)(ANNOUNCE_INTERVAL*60)+(SCRAPE_INTERVAL*60)
+			)
+		);
 	}
-	die($scrape);
+	die($scrape->set_data($scrapedata));
 }
 catch(Exception $e)
 {

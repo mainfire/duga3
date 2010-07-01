@@ -276,7 +276,6 @@ try
 		$peersquery = "select * from announce where hash = '$sha1infohash' and expire > $timestamp order by rand() limit $numwant";
 		if ($result = $db->query($peersquery))
 		{
-			#if ($compact == 1 && is_null($ipv6)) #eh, lets not break things further shall we?
 			if ($compact == 1)
 			{
 				$peers = null;
@@ -324,13 +323,22 @@ try
 			$announce = new bencode();
 			if ($iptype == 6 || !is_null($ipv6))
 			{
-				$announce = $announce->set_data(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers,'peers6'=>$peers6));
+				$announcedata = array
+				(
+					'interval' => (int)(ANNOUNCE_INTERVAL*60),
+					'peers' => $peers,
+					'peers6' => $peers6
+				);
 			}
 			elseif ($iptype == 4 || is_null($ipv6))
 			{
-				$announce = $announce->set_data(array('interval'=>(int)(ANNOUNCE_INTERVAL*60),'peers'=>$peers));
+				$announcedata = array
+				(
+					'interval' => (int)(ANNOUNCE_INTERVAL*60),
+					'peers' => $peers
+				);
 			}
-			die($announce);
+			die($announce->set_data($announcedata));
 		}
 	}
 	else
