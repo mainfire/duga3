@@ -1,18 +1,31 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+﻿<?php
+$count = (isset($_GET['count'])) ? $_GET['count'] : 0;
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 	<head profile="http://www.microformats.org/wiki/hcard-profile">
-		<title>Дуга-3 // <?php echo EXECUTE; ?></title>
+		<title>Дуга-3 // <?php print EXECUTE; ?></title>
 		<meta http-equiv="cache-control" content="no-cache" />
 		<meta name="robots" content="noindex, nofollow" />
 <?php
-$refreshpage = array('queue','process','cache','update','update2');
-if (in_array(EXECUTE,$refreshpage))
+$refreshpage1 = array('process','cache','update','update2');
+$refreshpage2 = array('queue');
+if (in_array(EXECUTE,$refreshpage1))
 {
 	if (REFRESHRATE > 0)
 	{
 ?>
-		<meta http-equiv="refresh" content="<?php echo REFRESHRATE; ?>;http://<?php echo URI; echo $_SERVER['PHP_SELF']; ?>?site=<?php echo SITECRAWL; ?>&execute=<?php echo EXECUTE; ?>" />
+		<meta http-equiv="refresh" content="<?php print REFRESHRATE; ?>;http://<?php print URI; print $_SERVER['PHP_SELF']; ?>?site=<?php print SITECRAWL; ?>&execute=<?php print EXECUTE; ?>" />
+<?php
+	}
+}
+elseif (in_array(EXECUTE,$refreshpage2))
+{
+	if (REFRESHRATE > 0)
+	{
+?>
+		<meta http-equiv="refresh" content="<?php print REFRESHRATE; ?>;http://<?php print URI; print $_SERVER['PHP_SELF']; ?>?site=none&execute=process" />
 <?php
 	}
 }
@@ -77,5 +90,5 @@ if (in_array(EXECUTE,$refreshpage))
 		</style>
 	</head>
 	<body>
-		<h1>Дуга-3 // <?php echo EXECUTE; ?></h1>
+		<h1>Дуга-3 // <?php print EXECUTE; ?></h1>
 		<div id="output">
