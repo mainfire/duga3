@@ -9,8 +9,8 @@ This is a _very_ unofficial extension to the tracker "scrape" implementation. It
 
 This is a fairly simple idea that is mostly based on the idea of packing data, like a compact announce. To review and make sure you know what a compact announce is:
 
- * IP Address of the end user [unsigned long (32bit, big endian)]
- * Port of the torrent client (unsigned short (16bit, big endian)]
+ * IP Address of the end user (unsigned long - 32bit, big endian)
+ * Port of the torrent client (unsigned short - 16bit, big endian)
 
 After packing into the specified formats, the returned data is much smaller compared to the full bencoded response.
 
