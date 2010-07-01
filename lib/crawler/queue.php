@@ -78,7 +78,7 @@ try
 				{
 					$finalurl = $url1;
 				}
-				if ($finalurl != null)
+				if (!is_null($finalurl) && filter_var($finalurl,FILTER_VALIDATE_URL))
 				{
 					$alreadyqueued = queue_check($serialize,$finalurl);
 					$query = $db->query("select * from processed where match (url) against ('\"$finalurl\"' IN BOOLEAN MODE) limit 1");
@@ -125,7 +125,7 @@ try
 				{
 					$finalurl = $url1;
 				}
-				if ($finalurl != null)
+				if (!is_null($finalurl) && filter_var($finalurl,FILTER_VALIDATE_URL))
 				{
 					$alreadyqueued = queue_check($serialize,$finalurl);
 					$query = $db->query("select * from processed where match (url) against ('\"$finalurl\"' IN BOOLEAN MODE) limit 1");
