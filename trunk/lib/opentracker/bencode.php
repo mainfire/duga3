@@ -1,5 +1,6 @@
 <?php
 #becode function originally by whitsoft, converted into class format
+#released into the public domain
 class bencode
 {
 	var $data;

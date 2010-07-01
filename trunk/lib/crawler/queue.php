@@ -1,4 +1,5 @@
 <?php
+#licensed under the new bsd license
 $time_start = microtime(true);
 require_once("functions.php");
 check_permissions(LIBROOT.'/'.CACHEFOLDER);

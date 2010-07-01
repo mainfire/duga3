@@ -1,5 +1,6 @@
 <?php
 #code originally written by Greg Poole (m4dm4n@gmail.com)
+#released into the public domain
 define('MAX_INTEGER_LENGTH', 12);
 class bdecode
 {

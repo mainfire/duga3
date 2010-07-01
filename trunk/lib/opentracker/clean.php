@@ -1,4 +1,5 @@
 <?php
+#licensed under the new bsd license
 require_once 'config.php';
 try
 {
