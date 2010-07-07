@@ -11,12 +11,20 @@ $count = (isset($_GET['count'])) ? $_GET['count'] : 0;
 <?php
 $refreshpage1 = array('process','cache','update','update2');
 $refreshpage2 = array('queue');
+if ($_SERVER["SERVER_PORT"] == '443')
+{
+	$prefix = "https://";
+}
+else
+{
+	$prefix = "http://";
+}
 if (in_array(EXECUTE,$refreshpage1))
 {
 	if (REFRESHRATE > 0)
 	{
 ?>
-		<meta http-equiv="refresh" content="<?php print REFRESHRATE; ?>;http://<?php print URI; print $_SERVER['PHP_SELF']; ?>?site=<?php print SITECRAWL; ?>&execute=<?php print EXECUTE; ?>" />
+		<meta http-equiv="refresh" content="<?php print REFRESHRATE; ?>;<?php print $prefix; print URI; print $_SERVER['PHP_SELF']; ?>?site=<?php print SITECRAWL; ?>&execute=<?php print EXECUTE; ?>" />
 <?php
 	}
 }
@@ -25,7 +33,7 @@ elseif (in_array(EXECUTE,$refreshpage2))
 	if (REFRESHRATE > 0)
 	{
 ?>
-		<meta http-equiv="refresh" content="<?php print REFRESHRATE; ?>;http://<?php print URI; print $_SERVER['PHP_SELF']; ?>?site=none&execute=process" />
+		<meta http-equiv="refresh" content="<?php print REFRESHRATE; ?>;<?php print $prefix; print URI; print $_SERVER['PHP_SELF']; ?>?site=none&execute=process" />
 <?php
 	}
 }
