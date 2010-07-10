@@ -84,9 +84,6 @@ else
 					case 'update3':
 						require_once 'update3.php';
 					break;
-					case 'upload':
-						require_once 'upload.php';
-					break;
 					default:
 						require_once 'front.php';
 					break;
