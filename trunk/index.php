@@ -1,6 +1,6 @@
 ﻿<?php
-require_once 'lib/crawler/config.php';
-require_once 'lib/crawler/functions.php';
+require_once '../lib/crawler/config.php';
+require_once '../lib/crawler/functions.php';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
 "http://www.w3.org/TR/REC-html40/loose.dtd">
@@ -103,43 +103,15 @@ try #batter up
 	}
 	else
 	{
-		$stats = $db->query("select count(id) as torrents, sum(leechs) as uno, sum(seeds) as dos, sum(snags) as tres from processed");
+		$stats = $db->query("select count(id) as torrents, sum(leechs) as leechs, sum(seeds) as seeds, sum(snags) as snags from processed");
 		if ($stats->num_rows > 0)
 		{
 			while ($line = $stats->fetch_object())
 			{
-				if ($line->torrents == null)
-				{
-					$torrents = 0;
-				}
-				else
-				{
-					$torrents = $line->torrents;
-				}
-				if ($line->uno == null)
-				{
-					$seeds = 0;
-				}
-				else
-				{
-					$seeds = $line->uno;
-				}
-				if ($line->dos == null)
-				{
-					$leechs = 0;
-				}
-				else
-				{
-					$leechs = $line->dos;
-				}
-				if ($line->tres == null)
-				{
-					$downloads = 0;
-				}
-				else
-				{
-					$downloads = $line->tres;
-				}
+				$torrents = intval($line->torrents,0);
+				$seeds = intval($line->seeds,0);
+				$leechs = intval($line->leechs,0);
+				$snags = intval($line->snags,0);
 			}
 		}
 		else
@@ -149,7 +121,7 @@ try #batter up
 			$leechs = 0;
 			$downloads = 0;
 		}
-		print "<p>currently watching over <strong>".count($plugins)."</strong> sites, while searching through <strong>$torrents</strong> torrents with <strong>$seeds</strong> seeds, <strong>$leechs</strong> leechers, and <strong>$downloads</strong> downloads.</p>";
+		print "<p>currently watching over <strong>".count($plugins)."</strong> sites, while searching through <strong>$torrents</strong> torrents with <strong>$seeds</strong> seeds, <strong>$leechs</strong> leechers, and <strong>$snags</strong> downloads.</p>";
 		print "<p>";
 		print "<form action=index.php method=post>";
 		print "<input style=width:300px; name=search type=text /> ";
