@@ -37,27 +37,35 @@ try
 	else
 	{
 		parse_str(str_replace('info_hash=','info_hash[]=',$_SERVER['QUERY_STRING']),$requests);
-		foreach ($requests['info_hash'] as $hash)
+		if (!is_array($requests['info_hash']) || is_null($requests['info_hash']))
 		{
-			if (!is_null($hash) || $hash != " ")
+			throw new Exception("no info_hash(s) specified");
+		}
+		else
+		{
+			$hasharray = array_values(array_filter($requests['info_hash']));
+			foreach ($hasharray as $hash)
 			{
-				$hashes = array();
-				if (strlen($infohash) != 40)
+				if (!is_null($hash) || $hash != " ")
 				{
-					$sha1hash = strtoupper(bin2hex($hash));
-				}
-				else
-				{
-					$sha1hash = strtoupper($infohash);
-				}
-				$hashexists = $db->query("select * from history where match (hash) against ('\"$sha1hash\"' IN BOOLEAN MODE) limit 1");
-				if ($hashexists->num_rows > 0)
-				{
-					$hashes[] = hex2bin($sha1hash);
-				}
-				else
-				{
-					throw new Exception("invalid info_hash(s) specified");
+					$hashes = array();
+					if (strlen($infohash) != 40)
+					{
+						$sha1hash = strtoupper(bin2hex($hash));
+					}
+					else
+					{
+						$sha1hash = strtoupper($infohash);
+					}
+					$hashexists = $db->query("select * from history where match (hash) against ('\"$sha1hash\"' IN BOOLEAN MODE) limit 1");
+					if ($hashexists->num_rows > 0)
+					{
+						$hashes[] = hex2bin($sha1hash);
+					}
+					else
+					{
+						throw new Exception("invalid info_hash(s) specified");
+					}
 				}
 			}
 		}
