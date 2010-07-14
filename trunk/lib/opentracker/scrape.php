@@ -46,7 +46,7 @@ try
 			$hasharray = array_values(array_filter($requests['info_hash']));
 			foreach ($hasharray as $hash)
 			{
-				if (!is_null($hash) || $hash != " ")
+				if ($hash != " ")
 				{
 					$hashes = array();
 					if (strlen($infohash) != 40)
